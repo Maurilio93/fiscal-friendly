@@ -51,7 +51,10 @@ const Navbar = () => {
           {/* CTA Button */}
           <div className="hidden md:block">
             <Link to="/area-utenti">
-              <Button variant="default" className="bg-[#FF6B6B] hover:opacity-90">
+              <Button
+                variant="default"
+                className="bg-[#FF6B6B] hover:bg-[#e85a5a] transition-smooth"
+              >
                 Area Utenti
               </Button>
             </Link>
@@ -63,7 +66,11 @@ const Navbar = () => {
               onClick={() => setIsOpen(!isOpen)}
               className="text-muted-foreground hover:text-primary focus:outline-none focus:text-primary transition-smooth"
             >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </button>
           </div>
         </div>
@@ -87,7 +94,10 @@ const Navbar = () => {
                 </Link>
               ))}
               <Link to="/area-utenti" onClick={() => setIsOpen(false)}>
-                <Button variant="default" className="w-full mt-2 bg-gradient-hero hover:opacity-90">
+                <Button
+                  variant="default"
+                  className="w-full mt-2 bg-gradient-hero hover:opacity-90"
+                >
                   Area Utenti
                 </Button>
               </Link>

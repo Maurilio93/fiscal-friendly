@@ -1,24 +1,30 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { 
-  User, 
-  Lock, 
-  FileText, 
-  CreditCard, 
-  Clock, 
-  CheckCircle, 
-  Upload, 
+import {
+  User,
+  Lock,
+  FileText,
+  CreditCard,
+  Clock,
+  CheckCircle,
+  Upload,
   Phone,
   Mail,
   ArrowRight,
   Eye,
-  Download
+  Download,
 } from "lucide-react";
 
 const AreaUtenti = () => {
@@ -35,13 +41,17 @@ const AreaUtenti = () => {
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="la-tua-email@esempio.it" />
+          <Input
+            id="email"
+            type="email"
+            placeholder="la-tua-email@esempio.it"
+          />
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
           <Input id="password" type="password" placeholder="••••••••" />
         </div>
-        <Button 
+        <Button
           className="w-full bg-gradient-hero hover:opacity-90"
           onClick={() => setIsLoggedIn(true)}
         >
@@ -49,7 +59,10 @@ const AreaUtenti = () => {
           Accedi
         </Button>
         <div className="text-center">
-          <a href="#" className="text-sm text-muted-foreground hover:text-primary">
+          <a
+            href="#"
+            className="text-sm text-muted-foreground hover:text-primary"
+          >
             Password dimenticata?
           </a>
         </div>
@@ -58,11 +71,15 @@ const AreaUtenti = () => {
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">oppure</span>
+            <span className="bg-background px-2 text-muted-foreground">
+              oppure
+            </span>
           </div>
         </div>
         <div className="text-center space-y-4">
-          <p className="text-sm text-muted-foreground">Non hai ancora un account?</p>
+          <p className="text-sm text-muted-foreground">
+            Non hai ancora un account?
+          </p>
           <Link to="/servizi">
             <Button variant="outline" className="w-full">
               Scopri i Nostri Servizi
@@ -80,7 +97,9 @@ const AreaUtenti = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold mb-2">Benvenuto, Mario!</h2>
-            <p className="text-primary-foreground/90">Abbonamento attivo fino al 15/12/2024</p>
+            <p className="text-primary-foreground/90">
+              Abbonamento attivo fino al 15/12/2024
+            </p>
           </div>
           <Badge className="bg-secondary text-secondary-foreground">
             Abbonato Premium
@@ -101,7 +120,9 @@ const AreaUtenti = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="shadow-elegant">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Servizi Rimanenti</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Servizi Rimanenti
+                </CardTitle>
                 <CreditCard className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -114,20 +135,22 @@ const AreaUtenti = () => {
 
             <Card className="shadow-elegant">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Richieste Attive</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Richieste Attive
+                </CardTitle>
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-accent">1</div>
-                <p className="text-xs text-muted-foreground">
-                  In elaborazione
-                </p>
+                <p className="text-xs text-muted-foreground">In elaborazione</p>
               </CardContent>
             </Card>
 
             <Card className="shadow-elegant">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Consulenze</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Consulenze
+                </CardTitle>
                 <Phone className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -153,8 +176,12 @@ const AreaUtenti = () => {
                       <FileText className="h-4 w-4 text-accent-foreground" />
                     </div>
                     <div>
-                      <p className="font-medium">Dichiarazione dei Redditi 2024</p>
-                      <p className="text-sm text-muted-foreground">Richiesta il 05/11/2024</p>
+                      <p className="font-medium">
+                        Dichiarazione dei Redditi 2024
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Richiesta il 05/11/2024
+                      </p>
                     </div>
                   </div>
                   <Badge variant="secondary">
@@ -170,7 +197,9 @@ const AreaUtenti = () => {
                     </div>
                     <div>
                       <p className="font-medium">Contratto di Locazione</p>
-                      <p className="text-sm text-muted-foreground">Completata il 28/10/2024</p>
+                      <p className="text-sm text-muted-foreground">
+                        Completata il 28/10/2024
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -199,24 +228,36 @@ const AreaUtenti = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col items-center justify-center space-y-2"
+                >
                   <FileText className="h-6 w-6 text-primary" />
                   <span>Fisco e Tributi</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col items-center justify-center space-y-2"
+                >
                   <CreditCard className="h-6 w-6 text-secondary" />
                   <span>Imprese</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col items-center justify-center space-y-2"
+                >
                   <FileText className="h-6 w-6 text-accent" />
                   <span>Contratti</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col items-center justify-center space-y-2"
+                >
                   <Phone className="h-6 w-6 text-primary" />
                   <span>Consulenza</span>
                 </Button>
               </div>
-              
+
               <div className="bg-muted p-4 rounded-lg">
                 <div className="flex items-center space-x-2 mb-3">
                   <Upload className="h-4 w-4 text-muted-foreground" />
@@ -246,28 +287,31 @@ const AreaUtenti = () => {
                     title: "Contratto di Locazione",
                     date: "28/10/2024",
                     status: "Completata",
-                    type: "Contratti"
+                    type: "Contratti",
                   },
                   {
                     title: "Apertura Partita IVA",
-                    date: "15/09/2024", 
+                    date: "15/09/2024",
                     status: "Completata",
-                    type: "Imprese"
+                    type: "Imprese",
                   },
                   {
                     title: "Consulenza Fiscale Telefonica",
                     date: "03/09/2024",
-                    status: "Completata", 
-                    type: "Consulenza"
+                    status: "Completata",
+                    type: "Consulenza",
                   },
                   {
                     title: "Istanza di Sgravio TARI",
                     date: "20/08/2024",
                     status: "Completata",
-                    type: "Fisco"
-                  }
+                    type: "Fisco",
+                  },
                 ].map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-smooth">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-smooth"
+                  >
                     <div className="flex items-center space-x-3">
                       <div className="bg-primary p-2 rounded-full">
                         <FileText className="h-4 w-4 text-primary-foreground" />
@@ -329,13 +373,15 @@ const AreaUtenti = () => {
                 <div className="bg-secondary/10 p-4 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium">Piano Attuale</span>
-                    <Badge className="bg-secondary text-secondary-foreground">Premium</Badge>
+                    <Badge className="bg-secondary text-secondary-foreground">
+                      Premium
+                    </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Abbonamento annuale con 4 servizi inclusi
                   </p>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Servizi utilizzati</span>
@@ -365,11 +411,13 @@ const AreaUtenti = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-hero text-primary-foreground py-20 px-4">
+      <section className="bg-[#0D3B66] text-primary-foreground py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Area Utenti</h1>
           <p className="text-xl md:text-2xl text-primary-foreground/90">
-            {isLoggedIn ? "Gestisci i tuoi servizi e richieste" : "Accedi per gestire i tuoi servizi"}
+            {isLoggedIn
+              ? "Gestisci i tuoi servizi e richieste"
+              : "Accedi per gestire i tuoi servizi"}
           </p>
         </div>
       </section>
@@ -384,7 +432,9 @@ const AreaUtenti = () => {
         <section className="py-20 bg-muted px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Vantaggi dell'Area Utenti</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Vantaggi dell'Area Utenti
+              </h2>
               <p className="text-xl text-muted-foreground">
                 Tutto quello che puoi fare con il tuo account
               </p>
@@ -400,7 +450,8 @@ const AreaUtenti = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Invia nuove richieste, monitora lo stato e scarica i documenti pronti
+                    Invia nuove richieste, monitora lo stato e scarica i
+                    documenti pronti
                   </p>
                 </CardContent>
               </Card>
@@ -414,7 +465,8 @@ const AreaUtenti = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Tieni traccia dei servizi utilizzati e di quelli ancora disponibili
+                    Tieni traccia dei servizi utilizzati e di quelli ancora
+                    disponibili
                   </p>
                 </CardContent>
               </Card>
@@ -428,7 +480,8 @@ const AreaUtenti = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Accedi a tutte le tue pratiche passate e ai documenti archiviati
+                    Accedi a tutte le tue pratiche passate e ai documenti
+                    archiviati
                   </p>
                 </CardContent>
               </Card>
@@ -441,7 +494,10 @@ const AreaUtenti = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to="/servizi">
-                  <Button size="lg" className="bg-gradient-hero hover:opacity-90">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-hero hover:opacity-90"
+                  >
                     Vedi i Piani
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>

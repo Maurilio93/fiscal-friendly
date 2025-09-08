@@ -294,7 +294,7 @@ const Index = () => {
             <Link to="/contatti">
               <Button
                 size="lg"
-                className="text-lg px-8 py-4 bg-[#FF6B6B] hover:opacity-90"
+                className="text-lg px-8 py-4 bg-[#FF6B6B] hover:bg-[#e85a5a] transition-smooth"
               >
                 <Phone className="mr-2 h-5 w-5" />
                 Contattaci Ora
