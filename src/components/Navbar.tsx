@@ -51,7 +51,7 @@ const Navbar = () => {
           {/* CTA Button */}
           <div className="hidden md:block">
             <Link to="/area-utenti">
-              <Button variant="default" className="bg-gradient-hero hover:opacity-90">
+              <Button variant="default" className="bg-[#FF6B6B] hover:opacity-90">
                 Area Utenti
               </Button>
             </Link>

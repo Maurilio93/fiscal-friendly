@@ -4,11 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Clock, 
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
   Send,
   MessageSquare,
   ArrowRight,
@@ -20,7 +20,7 @@ const Contatti = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-hero text-primary-foreground py-20 px-4">
+      <section className="bg-[#0D3B66] text-primary-foreground py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Contatti</h1>
           <p className="text-xl md:text-2xl text-primary-foreground/90">
@@ -188,8 +188,8 @@ const Contatti = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="message">Descrizione della richiesta *</Label>
-                <Textarea 
-                  id="message" 
+                <Textarea
+                  id="message"
                   placeholder="Descrivi brevemente di cosa hai bisogno. Più dettagli fornisci, più precisa sarà la nostra risposta..."
                   rows={4}
                 />
@@ -212,7 +212,7 @@ const Contatti = () => {
               <div className="flex items-center space-x-2">
                 <input type="checkbox" id="privacy" className="rounded border-border" />
                 <label htmlFor="privacy" className="text-sm text-muted-foreground">
-                  Accetto il trattamento dei dati personali secondo la 
+                  Accetto il trattamento dei dati personali secondo la
                   <a href="#" className="text-primary hover:underline"> Privacy Policy</a>
                 </label>
               </div>
@@ -246,11 +246,11 @@ const Contatti = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4">
-                  L'<strong>abbonamento prepagato</strong> (€100+IVA/anno) include 4 servizi + consulenze telefoniche illimitate. 
+                  L'<strong>abbonamento prepagato</strong> (€100+IVA/anno) include 4 servizi + consulenze telefoniche illimitate.
                   È ideale per chi ha bisogno di più servizi durante l'anno.
                 </p>
                 <p className="text-muted-foreground">
-                  I <strong>servizi a consumo</strong> (€40+IVA/servizio) sono perfetti per esigenze occasionali, 
+                  I <strong>servizi a consumo</strong> (€40+IVA/servizio) sono perfetti per esigenze occasionali,
                   senza vincoli di durata.
                 </p>
               </CardContent>
@@ -265,8 +265,8 @@ const Contatti = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Rispondiamo a tutte le richieste entro <strong>2 ore lavorative</strong>. 
-                  Per le urgenze, offriamo consulenze telefoniche immediate. 
+                  Rispondiamo a tutte le richieste entro <strong>2 ore lavorative</strong>.
+                  Per le urgenze, offriamo consulenze telefoniche immediate.
                   I documenti complessi vengono consegnati entro 24-48 ore.
                 </p>
               </CardContent>
@@ -281,7 +281,7 @@ const Contatti = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Assolutamente sì! Puoi passare all'abbonamento in qualsiasi momento. 
+                  Assolutamente sì! Puoi passare all'abbonamento in qualsiasi momento.
                   Il costo dei servizi già utilizzati verrà scalato dal prezzo dell'abbonamento.
                 </p>
               </CardContent>
@@ -296,8 +296,8 @@ const Contatti = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Sì, su appuntamento presso il nostro ufficio di Milano. 
-                  Tuttavia, la maggior parte delle pratiche può essere gestita completamente online, 
+                  Sì, su appuntamento presso il nostro ufficio di Milano.
+                  Tuttavia, la maggior parte delle pratiche può essere gestita completamente online,
                   risparmiando tempo e costi di spostamento.
                 </p>
               </CardContent>
@@ -312,7 +312,7 @@ const Contatti = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Offriamo una <strong>garanzia di soddisfazione</strong>. Se non sei completamente soddisfatto 
+                  Offriamo una <strong>garanzia di soddisfazione</strong>. Se non sei completamente soddisfatto
                   del servizio ricevuto, ti rimborsiamo integralmente o rifacciamo gratuitamente il lavoro.
                 </p>
               </CardContent>
@@ -327,7 +327,7 @@ const Contatti = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Sì, gestiamo pratiche per tutta Italia. Molti adempimenti fiscali e burocratici 
+                  Sì, gestiamo pratiche per tutta Italia. Molti adempimenti fiscali e burocratici
                   possono essere gestiti da remoto indipendentemente dalla regione di residenza.
                 </p>
               </CardContent>
@@ -343,7 +343,7 @@ const Contatti = () => {
             {/* Contact Info */}
             <div>
               <h2 className="text-3xl font-bold mb-8">Informazioni di Contatto</h2>
-              
+
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
                   <div className="bg-secondary p-3 rounded-full">

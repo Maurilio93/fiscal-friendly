@@ -8,7 +8,7 @@ const ComeFunziona = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-hero text-primary-foreground py-20 px-4">
+      <section className="bg-[#0D3B66] text-primary-foreground py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Come Funziona</h1>
           <p className="text-xl md:text-2xl text-primary-foreground/90">
@@ -37,9 +37,6 @@ const ComeFunziona = () => {
                 <div className="bg-secondary p-8 rounded-full w-fit mx-auto shadow-glow">
                   <UserCheck className="h-12 w-12 text-secondary-foreground" />
                 </div>
-                <div className="absolute -top-2 -right-2 bg-accent text-accent-foreground rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
-                  1
-                </div>
               </div>
               <h3 className="text-2xl font-bold mb-4">Registrati</h3>
               <p className="text-muted-foreground mb-6 leading-relaxed">
@@ -62,9 +59,6 @@ const ComeFunziona = () => {
                 <div className="bg-accent p-8 rounded-full w-fit mx-auto shadow-glow">
                   <Send className="h-12 w-12 text-accent-foreground" />
                 </div>
-                <div className="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
-                  2
-                </div>
               </div>
               <h3 className="text-2xl font-bold mb-4">Invia Richiesta</h3>
               <p className="text-muted-foreground mb-6 leading-relaxed">
@@ -84,9 +78,6 @@ const ComeFunziona = () => {
               <div className="relative mb-8">
                 <div className="bg-primary p-8 rounded-full w-fit mx-auto shadow-glow">
                   <CheckCircle className="h-12 w-12 text-primary-foreground" />
-                </div>
-                <div className="absolute -top-2 -right-2 bg-secondary text-secondary-foreground rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
-                  3
                 </div>
               </div>
               <h3 className="text-2xl font-bold mb-4">Ricevi la Soluzione</h3>
@@ -254,7 +245,7 @@ const ComeFunziona = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Per la maggior parte delle richieste, forniamo una risposta entro 24-48 ore lavorative. 
+                  Per la maggior parte delle richieste, forniamo una risposta entro 24-48 ore lavorative.
                   Per le urgenze, offriamo consulenze telefoniche immediate per gli abbonati.
                 </p>
               </CardContent>
@@ -266,7 +257,7 @@ const ComeFunziona = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Sì, accettiamo PDF, DOC, DOCX, JPG, PNG e altri formati comuni. 
+                  Sì, accettiamo PDF, DOC, DOCX, JPG, PNG e altri formati comuni.
                   Se hai dubbi su un formato specifico, contattaci prima di inviare la richiesta.
                 </p>
               </CardContent>
@@ -278,7 +269,7 @@ const ComeFunziona = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  No, l'abbonamento non si rinnova automaticamente. Ti contatteremo prima della scadenza 
+                  No, l'abbonamento non si rinnova automaticamente. Ti contatteremo prima della scadenza
                   per sapere se desideri rinnovare il servizio.
                 </p>
               </CardContent>
@@ -290,7 +281,7 @@ const ComeFunziona = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Puoi richiedere servizi aggiuntivi pagando la tariffa occasionale di €40+IVA per ogni servizio extra, 
+                  Puoi richiedere servizi aggiuntivi pagando la tariffa occasionale di €40+IVA per ogni servizio extra,
                   oppure valutare un abbonamento con più servizi inclusi.
                 </p>
               </CardContent>

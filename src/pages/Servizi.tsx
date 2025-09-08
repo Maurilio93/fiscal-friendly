@@ -2,12 +2,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { 
-  Calculator, 
-  Building, 
-  FileText, 
-  Phone, 
-  CheckCircle, 
+import {
+  Calculator,
+  Building,
+  FileText,
+  Phone,
+  CheckCircle,
   ArrowRight,
   TrendingUp,
   BarChart3,
@@ -19,7 +19,7 @@ const Servizi = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-hero text-primary-foreground py-20 px-4">
+      <section className="bg-[#0D3B66] text-primary-foreground py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">I Nostri Servizi</h1>
           <p className="text-xl md:text-2xl text-primary-foreground/90">
@@ -35,7 +35,7 @@ const Servizi = () => {
             <Badge className="mb-4 bg-secondary text-secondary-foreground">Prezzi trasparenti</Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Scegli la formula che fa per te</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
             {/* Abbonamento */}
             <Card className="shadow-elegant hover:shadow-glow transition-smooth border-secondary border-2">
@@ -334,7 +334,7 @@ const Servizi = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  L'abbonamento annuale include 4 servizi + consulenze illimitate per €100+IVA. 
+                  L'abbonamento annuale include 4 servizi + consulenze illimitate per €100+IVA.
                   I servizi occasionali costano €40+IVA ciascuno senza vincoli di abbonamento.
                 </p>
               </CardContent>
@@ -346,7 +346,7 @@ const Servizi = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Assolutamente sì. Puoi passare all'abbonamento in qualsiasi momento e avrai accesso 
+                  Assolutamente sì. Puoi passare all'abbonamento in qualsiasi momento e avrai accesso
                   immediato a tutti i vantaggi inclusi.
                 </p>
               </CardContent>
@@ -358,7 +358,7 @@ const Servizi = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  I servizi extra come contabilità, business plan e analisi bilanci richiedono 
+                  I servizi extra come contabilità, business plan e analisi bilanci richiedono
                   un preventivo dedicato in base alla complessità del lavoro richiesto.
                 </p>
               </CardContent>
