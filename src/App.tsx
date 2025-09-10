@@ -13,6 +13,7 @@ import AreaUtenti from "./pages/AreaUtenti";
 import LavoraConNoi from "./pages/LavoraConNoi";
 import Contatti from "./pages/Contatti";
 import NotFound from "./pages/NotFound";
+import SignupForm from "./components/SignupForm";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
         <div className="min-h-screen flex flex-col">
           <Navbar />
           <main className="flex-1">
+            <SignupForm />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/chi-siamo" element={<ChiSiamo />} />

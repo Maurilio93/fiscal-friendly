@@ -114,9 +114,6 @@ const Index = () => {
             {/* Abbonamento */}
             <Card className="shadow-elegant hover:shadow-glow transition-smooth border-secondary border-2">
               <CardHeader className="text-center pb-8">
-                <Badge className="w-fit mx-auto mb-4 bg-secondary text-secondary-foreground">
-                  Consigliato
-                </Badge>
                 <CardTitle className="text-2xl">Abbonamento Annuale</CardTitle>
                 <div className="text-4xl font-bold text-primary">
                   €100
@@ -151,6 +148,9 @@ const Index = () => {
                   </Link>
                 </div>
               </CardContent>
+              <Badge className="w-fit mx-auto mb-6 bg-secondary text-secondary-foreground flex ">
+                Consigliato
+              </Badge>
             </Card>
 
             {/* Occasionale */}

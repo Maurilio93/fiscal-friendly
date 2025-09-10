@@ -1,0 +1,25 @@
+{
+  "users": [
+    {
+      "id": "853e04d0-3763-44eb-b0cc-fd4a3d968e81",
+      "name": "Mario Rossi",
+      "email": "mario@test.it",
+      "passwordHash": "$2b$10$uPK8KPDFk/EHggAE292PhOLjW/VSz.IzCV7MGJnJmV8kBSy4JvK7y",
+      "createdAt": "2025-09-10T11:27:33.041Z"
+    },
+    {
+      "id": "c6ba179a-7f38-41a2-9682-821fe0c2ce62",
+      "name": "maurilio",
+      "email": "admin@admin.it",
+      "passwordHash": "$2b$10$bd/4F71vv8FZwkzop3lBPezwp9QawqBtQ06ayCc4Ew.eEZz5REbiK",
+      "createdAt": "2025-09-10T14:26:12.923Z"
+    },
+    {
+      "id": "474affa4-1a40-4004-b53b-3fc9c2053c0c",
+      "name": "maurilio",
+      "email": "maurilio.valenti@gmail.com",
+      "passwordHash": "$2b$10$rxxTvGTfL54WGTuCnYeqZO5gshYFbt8HkUwISBUvGvXopx1p4VIdm",
+      "createdAt": "2025-09-10T14:36:26.177Z"
+    }
+  ]
+}
