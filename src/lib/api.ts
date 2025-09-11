@@ -1,46 +1,23 @@
-// src/lib/api.ts
-export const API_BASE = "https://api.adoring-varahamihira.217-154-2-74.plesk.page";
+function resolveApiBase(): string {
+  const env = (import.meta as any).env?.VITE_API_BASE?.trim();
+  if (env) return env.replace(/\/$/, "");
+  const host = window.location.hostname;
+  if (host === "localhost" || host === "127.0.0.1") return ""; // usa proxy
+  return "https://api.adoring-varahamihira.217-154-2-74.plesk.page"; // prod
+}
+export const API_BASE = resolveApiBase();
 
 async function http<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const url = `${API_BASE}${path}`;
+  const res = await fetch(url, {
     credentials: "include",
     headers: { "Content-Type": "application/json", ...(init.headers || {}) },
     ...init,
   });
-
   let payload: any = null;
-  try { payload = await res.json(); } catch {}
-
+  try {
+    payload = await res.json();
+  } catch {}
   if (!res.ok) throw new Error(payload?.error || `Errore ${res.status}`);
   return payload as T;
-}
-
-export type RegisterInput = { name: string; email: string; password: string };
-export type LoginInput    = { email: string; password: string };
-
-export async function registerUser(data: RegisterInput) {
-  return http<{ user: { id: string; name: string; email: string } }>(
-    "/api/auth/register",
-    { method: "POST", body: JSON.stringify(data) }
-  );
-}
-
-export async function loginUser(data: LoginInput) {
-  return http<{ user: { id: string; name: string; email: string } }>(
-    "/api/auth/login",
-    { method: "POST", body: JSON.stringify(data) }
-  );
-}
-
-export async function getMe() {
-  return http<{ user: { id: string; name: string; email: string } }>(
-    "/api/auth/me"
-  );
-}
-
-export async function logout() {
-  return http<{ ok: true }>(
-    "/api/auth/logout",
-    { method: "POST", body: JSON.stringify({}) }
-  );
 }
