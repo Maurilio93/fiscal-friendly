@@ -1,9 +1,31 @@
 // src/lib/api.ts
-const API_BASE = (import.meta.env.VITE_API_BASE ?? "http://localhost:4000").replace(/\/$/, "");
+
+/** Determina in modo robusto la base delle API */
+function resolveApiBase(): string {
+  const env = (import.meta as any).env?.VITE_API_BASE as string | undefined;
+  if (env && env.trim()) return env.trim().replace(/\/$/, "");
+
+  const host = window.location.hostname;
+
+  // Siamo in locale?
+  if (host === "localhost" || host === "127.0.0.1") {
+    return "http://localhost:4000";
+  }
+
+  // Siamo sul dominio pubblico: usa il sottodominio api.<dominio>
+  // Se già siamo su api.<dominio>, mantieni quello.
+  if (host.startsWith("api.")) {
+    return `https://${host}`;
+  }
+  return `https://api.${host}`;
+}
+
+export const API_BASE = resolveApiBase();
+console.log("[API_BASE]", API_BASE); // <-- utile per verificare a runtime
 
 async function http<T>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
-    credentials: "include", // invia/riceve i cookie (necessario)
+    credentials: "include", // cookie on/off
     headers: {
       "Content-Type": "application/json",
       ...(init.headers || {}),
@@ -11,7 +33,6 @@ async function http<T>(path: string, init: RequestInit = {}): Promise<T> {
     ...init,
   });
 
-  // Prova a leggere JSON anche in caso di errore
   let payload: any = null;
   try { payload = await res.json(); } catch { /* ignore */ }
 
@@ -45,13 +66,9 @@ export async function getMe() {
   );
 }
 
-// Body {} così alcuni proxy/WAF non bloccano il POST "vuoto"
 export async function logout() {
   return http<{ ok: true }>("/api/auth/logout", {
     method: "POST",
     body: JSON.stringify({}),
   });
 }
-
-// (facoltativo) export per debug
-export { API_BASE };
