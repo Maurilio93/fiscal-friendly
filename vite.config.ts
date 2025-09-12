@@ -1,13 +1,16 @@
+import path from "node:path";
 import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  server: {
-    proxy: {
-      "/api": {
-        target: "https://api.adoring-varahamihira.217-154-2-74.plesk.page",
-        changeOrigin: true,
-        secure: true,
-      },
-    },
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src")
+    }
   },
+  server: {
+    port: 8080, 
+    host: true
+  }
 });
