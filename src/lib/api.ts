@@ -1,17 +1,21 @@
 // src/lib/api.ts
 
 function resolveApiBase(): string {
+  const mode = import.meta.env.MODE; // 'development' | 'production'
   const env = (import.meta as any).env?.VITE_API_BASE as string | undefined;
-  if (env && env.trim()) return env.trim().replace(/\/$/, "");
-
   const host = window.location.hostname;
+
+  // Consenti VITE_API_BASE solo in dev
+  if (mode !== "production" && env && env.trim()) {
+    return env.trim().replace(/\/$/, "");
+  }
 
   // Dev locale: front su 8080/5173 → API su 4000
   if (host === "localhost" || host === "127.0.0.1") {
     return "http://localhost:4000";
   }
 
-  // Produzione: stesso dominio del sito (niente api.)
+  // Produzione: stesso dominio del sito
   return window.location.origin;
 }
 
