@@ -6,21 +6,22 @@ function resolveApiBase(): string {
 
   const host = window.location.hostname;
 
-  // Dev locale: front su 8080/5173/3000 → API locale su 4000
+  // Dev locale: front su 8080/5173 → API su 4000
   if (host === "localhost" || host === "127.0.0.1") {
     return "http://localhost:4000";
   }
 
-  // Prod: se siamo su api.* uso quello; altrimenti prefisso api.
-  if (host.startsWith("api.")) return `https://${host}`;
-  return `https://api.${host}`;
+  // Produzione: stesso dominio del sito (niente api.)
+  return window.location.origin;
 }
 
+// In prod stesso dominio
+// In dev userai http://localhost:4000 tramite l'if su hostname === 'localhost'
 export const API_BASE = resolveApiBase();
 
 async function http<T>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
-    credentials: "include", // necessario per inviare/ricevere il cookie HttpOnly
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...(init.headers || {}),
@@ -29,11 +30,7 @@ async function http<T>(path: string, init: RequestInit = {}): Promise<T> {
   });
 
   let payload: any = null;
-  try {
-    payload = await res.json();
-  } catch {
-    // body vuoto/non JSON → ignoro
-  }
+  try { payload = await res.json(); } catch {}
 
   if (!res.ok) {
     const msg = payload?.error || payload?.message || `Errore ${res.status}`;
@@ -44,8 +41,6 @@ async function http<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 export type RegisterInput = { name: string; email: string; password: string };
 export type LoginInput    = { email: string; password: string };
-
-
 
 export function registerUser(data: RegisterInput) {
   return http<{ user: { id: string; name: string; email: string } }>(
@@ -70,6 +65,6 @@ export function getMe() {
 export function logout() {
   return http<{ ok: true }>("/api/auth/logout", {
     method: "POST",
-    body: JSON.stringify({}),
+    body: JSON.stringify({}), // alcuni proxy/WAF bloccano POST vuoti
   });
 }
