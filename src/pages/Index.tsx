@@ -20,6 +20,7 @@ import {
   Calculator,
   Building,
 } from "lucide-react";
+import SignupForm from "@/components/SignupForm";
 
 const Index = () => {
   return (
@@ -305,6 +306,9 @@ const Index = () => {
                 Come Funziona
               </Button>
             </Link>
+          </div>
+          <div>
+            <SignupForm />
           </div>
         </div>
       </section>
