@@ -53,7 +53,7 @@ const Navbar = () => {
             <Link to="/area-utenti">
               <Button
                 variant="default"
-                className="bg-[#FF6B6B] hover:bg-[#e85a5a] transition-smooth"
+                className="bg-[#FF6B6C] hover:bg-[#e85a5a] transition-smooth"
               >
                 Area Utenti
               </Button>
