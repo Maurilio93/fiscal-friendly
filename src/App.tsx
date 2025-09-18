@@ -3,8 +3,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+
 import Index from "./pages/Index";
 import ChiSiamo from "./pages/ChiSiamo";
 import Servizi from "./pages/Servizi";
@@ -13,8 +15,15 @@ import AreaUtenti from "./pages/AreaUtenti";
 import LavoraConNoi from "./pages/LavoraConNoi";
 import Contatti from "./pages/Contatti";
 import NotFound from "./pages/NotFound";
+
+// Checkout esistenti
 import CheckoutSuccess from "./pages/CheckoutSuccess";
 import CheckoutFailure from "./pages/CheckoutFailure";
+
+// 🛒 Carrello + Ritorno Viva
+import { CartProvider } from "./cart/CartContext";
+import CartPage from "./pages/CartPage";
+import CheckoutReturnPage from "./pages/CheckoutReturnPage";
 
 const queryClient = new QueryClient();
 
@@ -24,24 +33,35 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <div className="min-h-screen flex flex-col">
-          <Navbar />
-          <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/chi-siamo" element={<ChiSiamo />} />
-              <Route path="/servizi" element={<Servizi />} />
-              <Route path="/come-funziona" element={<ComeFunziona />} />
-              <Route path="/area-utenti" element={<AreaUtenti />} />
-              <Route path="/lavora-con-noi" element={<LavoraConNoi />} />
-              <Route path="/contatti" element={<Contatti />} />
-              <Route path="/checkout/success" element={<CheckoutSuccess />} />
-              <Route path="/checkout/failure" element={<CheckoutFailure />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        {/* CartProvider rende disponibile lo stato carrello a tutta l'app */}
+        <CartProvider>
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <main className="flex-1">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/chi-siamo" element={<ChiSiamo />} />
+                <Route path="/servizi" element={<Servizi />} />
+                <Route path="/come-funziona" element={<ComeFunziona />} />
+                <Route path="/area-utenti" element={<AreaUtenti />} />
+                <Route path="/lavora-con-noi" element={<LavoraConNoi />} />
+                <Route path="/contatti" element={<Contatti />} />
+
+                {/* 🛒 Nuove pagine */}
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="/checkout/return" element={<CheckoutReturnPage />} />
+                <Route path="/checkout/cancel" element={<CheckoutFailure />} />
+
+                {/* Esistenti */}
+                <Route path="/checkout/success" element={<CheckoutSuccess />} />
+                <Route path="/checkout/failure" element={<CheckoutFailure />} />
+
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </CartProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

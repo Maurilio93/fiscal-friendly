@@ -1,7 +1,13 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Calculator,
   Building,
@@ -12,18 +18,46 @@ import {
   TrendingUp,
   BarChart3,
   Target,
-  Lightbulb
+  Lightbulb,
 } from "lucide-react";
+import { useCart } from "@/cart/CartContext";
 
 const Servizi = () => {
+  const { add } = useCart();
+  const navigate = useNavigate();
+
+  const addAbbonamento = () => {
+    // id e priceCents devono esistere in tabella `products` lato server
+    // es: ('abbonamento_annuale', 'Abbonamento Annuale', 10000)
+    add({
+      id: "abbonamento_annuale",
+      title: "Abbonamento Annuale",
+      unitPriceCents: 10000,
+    });
+    navigate("/cart");
+  };
+
+  const addOccasionale = () => {
+    // es: ('servizio_occasionale', 'Servizio Occasionale', 4000)
+    add({
+      id: "servizio_occasionale",
+      title: "Servizio Occasionale",
+      unitPriceCents: 4000,
+    });
+    navigate("/cart");
+  };
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="bg-[#0D3B66] text-primary-foreground py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">I Nostri Servizi</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            I Nostri Servizi
+          </h1>
           <p className="text-xl md:text-2xl text-primary-foreground/90">
-            Tutto quello di cui hai bisogno per la tua attività e la tua vita professionale
+            Tutto quello di cui hai bisogno per la tua attività e la tua vita
+            professionale
           </p>
         </div>
       </section>
@@ -32,27 +66,49 @@ const Servizi = () => {
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <Badge className="mb-4 bg-secondary text-secondary-foreground">Prezzi trasparenti</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Scegli la formula che fa per te</h2>
+            <Badge className="mb-4 bg-secondary text-secondary-foreground">
+              Prezzi trasparenti
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Scegli la formula che fa per te
+            </h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
             {/* Abbonamento */}
             <Card className="shadow-elegant hover:shadow-glow transition-smooth border-secondary border-2">
               <CardHeader className="text-center pb-8">
-                <Badge className="w-fit mx-auto mb-4 bg-secondary text-secondary-foreground">Consigliato</Badge>
+                <Badge className="w-fit mx-auto mb-4 bg-secondary text-secondary-foreground">
+                  Consigliato
+                </Badge>
                 <CardTitle className="text-2xl">Abbonamento Annuale</CardTitle>
-                <div className="text-4xl font-bold text-primary">€100<span className="text-lg text-muted-foreground"> + IVA</span></div>
-                <CardDescription className="text-lg">4 servizi inclusi</CardDescription>
+                <div className="text-4xl font-bold text-primary">
+                  €100
+                  <span className="text-lg text-muted-foreground"> + IVA</span>
+                </div>
+                <CardDescription className="text-lg">
+                  4 servizi inclusi
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link to="/area-utenti" className="block">
-                  <Button className="w-full bg-gradient-hero hover:opacity-90 mb-4">
-                    Abbonati Ora
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Se vuoi mantenere il vecchio flusso di onboarding */}
+                  <Link to="/area-utenti" className="block">
+                    <Button className="w-full bg-gradient-hero hover:opacity-90">
+                      Abbonati Ora
+                    </Button>
+                  </Link>
+                  {/* ➕ Nuovo: aggiungi al carrello */}
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={addAbbonamento}
+                  >
+                    Aggiungi al carrello
                   </Button>
-                </Link>
-                <p className="text-sm text-muted-foreground text-center">
-                  Ideale per chi ha bisogno di più servizi durante l'anno
+                </div>
+                <p className="text-sm text-muted-foreground text-center mt-4">
+                  Ideale per chi ha bisogno di più servizi durante l&apos;anno
                 </p>
               </CardContent>
             </Card>
@@ -61,16 +117,30 @@ const Servizi = () => {
             <Card className="shadow-elegant hover:shadow-glow transition-smooth">
               <CardHeader className="text-center pb-8">
                 <CardTitle className="text-2xl">Servizi Occasionali</CardTitle>
-                <div className="text-4xl font-bold text-primary">€40<span className="text-lg text-muted-foreground"> + IVA</span></div>
-                <CardDescription className="text-lg">A singolo servizio</CardDescription>
+                <div className="text-4xl font-bold text-primary">
+                  €40
+                  <span className="text-lg text-muted-foreground"> + IVA</span>
+                </div>
+                <CardDescription className="text-lg">
+                  A singolo servizio
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link to="/contatti" className="block">
-                  <Button variant="outline" className="w-full mb-4">
-                    Richiedi Servizio
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Link to="/contatti" className="block">
+                    <Button variant="outline" className="w-full">
+                      Richiedi Servizio
+                    </Button>
+                  </Link>
+                  {/* ➕ Nuovo: aggiungi al carrello */}
+                  <Button
+                    className="w-full bg-gradient-hero hover:opacity-90"
+                    onClick={addOccasionale}
+                  >
+                    Aggiungi al carrello
                   </Button>
-                </Link>
-                <p className="text-sm text-muted-foreground text-center">
+                </div>
+                <p className="text-sm text-muted-foreground text-center mt-4">
                   Perfetto per esigenze specifiche e occasionali
                 </p>
               </CardContent>
@@ -78,12 +148,14 @@ const Servizi = () => {
           </div>
         </div>
       </section>
-
+      
       {/* Services Categories */}
       <section className="py-20 bg-muted px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Servizi inclusi nell'abbonamento</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Servizi inclusi nell'abbonamento
+            </h2>
             <p className="text-xl text-muted-foreground">
               Suddivisi per categorie per aiutarti a orientarti
             </p>
@@ -99,7 +171,9 @@ const Servizi = () => {
                   </div>
                   <div>
                     <CardTitle className="text-xl">Fisco e Tributi</CardTitle>
-                    <CardDescription>Tutto per le tue questioni fiscali</CardDescription>
+                    <CardDescription>
+                      Tutto per le tue questioni fiscali
+                    </CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -135,8 +209,12 @@ const Servizi = () => {
                     <Building className="h-6 w-6 text-accent-foreground" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl">Imprese e Professionisti</CardTitle>
-                    <CardDescription>Servizi per la tua attività</CardDescription>
+                    <CardTitle className="text-xl">
+                      Imprese e Professionisti
+                    </CardTitle>
+                    <CardDescription>
+                      Servizi per la tua attività
+                    </CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -172,8 +250,12 @@ const Servizi = () => {
                     <FileText className="h-6 w-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl">Contratti e Registrazioni</CardTitle>
-                    <CardDescription>Documenti e pratiche legali</CardDescription>
+                    <CardTitle className="text-xl">
+                      Contratti e Registrazioni
+                    </CardTitle>
+                    <CardDescription>
+                      Documenti e pratiche legali
+                    </CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -210,7 +292,9 @@ const Servizi = () => {
                   </div>
                   <div>
                     <CardTitle className="text-xl">Consulenze Rapide</CardTitle>
-                    <CardDescription>Supporto immediato quando serve</CardDescription>
+                    <CardDescription>
+                      Supporto immediato quando serve
+                    </CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -245,7 +329,9 @@ const Servizi = () => {
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Servizi Extra</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Servizi Extra
+            </h2>
             <p className="text-xl text-muted-foreground">
               Servizi specialistici per esigenze più complesse
             </p>
@@ -324,42 +410,52 @@ const Servizi = () => {
       <section className="py-20 bg-muted px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Domande Frequenti</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Domande Frequenti
+            </h2>
           </div>
 
           <div className="space-y-6">
             <Card className="shadow-elegant">
               <CardHeader>
-                <CardTitle className="text-lg">Qual è la differenza tra abbonamento e servizi occasionali?</CardTitle>
+                <CardTitle className="text-lg">
+                  Qual è la differenza tra abbonamento e servizi occasionali?
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  L'abbonamento annuale include 4 servizi + consulenze illimitate per €100+IVA.
-                  I servizi occasionali costano €40+IVA ciascuno senza vincoli di abbonamento.
+                  L'abbonamento annuale include 4 servizi + consulenze
+                  illimitate per €100+IVA. I servizi occasionali costano €40+IVA
+                  ciascuno senza vincoli di abbonamento.
                 </p>
               </CardContent>
             </Card>
 
             <Card className="shadow-elegant">
               <CardHeader>
-                <CardTitle className="text-lg">Posso cambiare da occasionale ad abbonamento?</CardTitle>
+                <CardTitle className="text-lg">
+                  Posso cambiare da occasionale ad abbonamento?
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Assolutamente sì. Puoi passare all'abbonamento in qualsiasi momento e avrai accesso
-                  immediato a tutti i vantaggi inclusi.
+                  Assolutamente sì. Puoi passare all'abbonamento in qualsiasi
+                  momento e avrai accesso immediato a tutti i vantaggi inclusi.
                 </p>
               </CardContent>
             </Card>
 
             <Card className="shadow-elegant">
               <CardHeader>
-                <CardTitle className="text-lg">I servizi extra sono inclusi nell'abbonamento?</CardTitle>
+                <CardTitle className="text-lg">
+                  I servizi extra sono inclusi nell'abbonamento?
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  I servizi extra come contabilità, business plan e analisi bilanci richiedono
-                  un preventivo dedicato in base alla complessità del lavoro richiesto.
+                  I servizi extra come contabilità, business plan e analisi
+                  bilanci richiedono un preventivo dedicato in base alla
+                  complessità del lavoro richiesto.
                 </p>
               </CardContent>
             </Card>
@@ -372,16 +468,25 @@ const Servizi = () => {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Inizia subito</h2>
           <p className="text-xl mb-8 text-primary-foreground/90">
-            Scegli la soluzione più adatta alle tue esigenze e inizia a risparmiare tempo e denaro
+            Scegli la soluzione più adatta alle tue esigenze e inizia a
+            risparmiare tempo e denaro
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/area-utenti">
-              <Button size="lg" variant="secondary" className="text-lg px-8 py-4">
+              <Button
+                size="lg"
+                variant="secondary"
+                className="text-lg px-8 py-4"
+              >
                 Abbonati Ora
               </Button>
             </Link>
             <Link to="/contatti">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-4 bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-lg px-8 py-4 bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              >
                 <Phone className="mr-2 h-5 w-5" />
                 Richiedi Consulenza
               </Button>
