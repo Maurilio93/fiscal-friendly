@@ -13,6 +13,8 @@ import AreaUtenti from "./pages/AreaUtenti";
 import LavoraConNoi from "./pages/LavoraConNoi";
 import Contatti from "./pages/Contatti";
 import NotFound from "./pages/NotFound";
+import CheckoutSuccess from "./pages/CheckoutSuccess";
+import CheckoutFailure from "./pages/CheckoutFailure";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +35,8 @@ const App = () => (
               <Route path="/area-utenti" element={<AreaUtenti />} />
               <Route path="/lavora-con-noi" element={<LavoraConNoi />} />
               <Route path="/contatti" element={<Contatti />} />
+              <Route path="/checkout/success" element={<CheckoutSuccess />} />
+              <Route path="/checkout/failure" element={<CheckoutFailure />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

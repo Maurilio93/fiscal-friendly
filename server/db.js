@@ -1,4 +1,3 @@
-// server/db.js
 const mysql = require("mysql2/promise");
 
 const pool = mysql.createPool({
@@ -12,4 +11,4 @@ const pool = mysql.createPool({
   namedPlaceholders: true,
 });
 
-module.exports = { pool };
+module.exports = pool;

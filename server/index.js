@@ -8,9 +8,10 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-// const cors = require("cors");  // <-- NON usarlo insieme al blocco manuale
-const { sendWelcomeEmail } = require("./mailer");
-// const { pool } = require("./db"); // se non lo usi, puoi commentarlo
+
+const vivaRouter = require("./payments/viva");
+// const { sendWelcomeEmail } = require("./mailer"); // <-- se non lo usi, commenta
+// const { pool } = require("./db"); // se non lo usi, commenta
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -19,7 +20,7 @@ const DB_PATH = path.join(__dirname, "data", "db.json");
 
 app.set("trust proxy", 1);
 
-/* ----------------------- CORS (PRIMO MIDDLEWARE!) ----------------------- */
+/* ----------------------- CORS ----------------------- */
 const ALLOWED_ORIGINS = new Set([
   "http://localhost:8080",
   "http://localhost:5173",
@@ -34,23 +35,27 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
     res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization"
+    );
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   }
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
 });
 
-/* ----------------------- ALTRI MIDDLEWARE ----------------------- */
+/* ----------------------- MIDDLEWARE ----------------------- */
 app.use(helmet());
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 app.use(express.json());
 app.use(cookieParser());
 
-/* ----------------------- JSON mini DB ----------------------- */
+/* ----------------------- DB JSON ----------------------- */
 async function ensureDb() {
-  try { await fs.access(DB_PATH); }
-  catch {
+  try {
+    await fs.access(DB_PATH);
+  } catch {
     await fs.mkdir(path.dirname(DB_PATH), { recursive: true });
     await fs.writeFile(DB_PATH, JSON.stringify({ users: [] }, null, 2));
   }
@@ -71,15 +76,16 @@ function newId() {
     : crypto.randomBytes(16).toString("hex");
 }
 function signToken(user) {
-  return jwt.sign({ sub: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign({ sub: user.id, email: user.email }, JWT_SECRET, {
+    expiresIn: "7d",
+  });
 }
-// Se testi da localhost verso dominio https, per far salvare il cookie:
 function setAuthCookie(res, token, origin) {
   const crossSite = origin && origin.startsWith("http://localhost");
   res.cookie("token", token, {
     httpOnly: true,
-    secure: true,                         // richiesto da SameSite=None
-    sameSite: crossSite ? "none" : "lax", // "none" per localhost -> dominio https
+    secure: true,
+    sameSite: crossSite ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
     path: "/",
   });
@@ -95,28 +101,40 @@ function authMiddleware(req, res, next) {
   }
 }
 
-/* ----------------------- ROUTES ----------------------- */
+/* ----------------------- API ROUTES ----------------------- */
+app.use(vivaRouter); // tutte le rotte /api/payments/viva/...
+
 app.get("/api/health", (_req, res) => res.json({ ok: true, ts: Date.now() }));
 
 app.post("/api/auth/register", async (req, res) => {
   try {
     const { name, email, password } = req.body || {};
     if (!name || !email || !password)
-      return res.status(400).json({ error: "name, email e password sono obbligatori" });
+      return res
+        .status(400)
+        .json({ error: "name, email e password sono obbligatori" });
 
     const db = await loadDb();
-    if (db.users.find(u => u.email.toLowerCase() === String(email).toLowerCase()))
+    if (db.users.find((u) => u.email.toLowerCase() === String(email).toLowerCase()))
       return res.status(409).json({ error: "Email già registrata" });
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const user = { id: newId(), name, email, passwordHash, createdAt: new Date().toISOString() };
+    const user = {
+      id: newId(),
+      name,
+      email,
+      passwordHash,
+      createdAt: new Date().toISOString(),
+    };
     db.users.push(user);
     await saveDb(db);
 
     const token = signToken(user);
     setAuthCookie(res, token, req.headers.origin);
 
-    sendWelcomeEmail(email, name).catch(err => console.error("Mail welcome error:", err));
+    // sendWelcomeEmail(email, name).catch((err) =>
+    //   console.error("Mail welcome error:", err)
+    // );
 
     res.status(201).json({ user: { id: user.id, name: user.name, email: user.email } });
   } catch (e) {
@@ -128,10 +146,13 @@ app.post("/api/auth/register", async (req, res) => {
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body || {};
-    if (!email || !password) return res.status(400).json({ error: "email e password sono obbligatori" });
+    if (!email || !password)
+      return res.status(400).json({ error: "email e password sono obbligatori" });
 
     const db = await loadDb();
-    const user = db.users.find(u => u.email.toLowerCase() === String(email).toLowerCase());
+    const user = db.users.find(
+      (u) => u.email.toLowerCase() === String(email).toLowerCase()
+    );
     if (!user) return res.status(401).json({ error: "Credenziali non valide" });
 
     const ok = await bcrypt.compare(password, user.passwordHash);
@@ -148,7 +169,7 @@ app.post("/api/auth/login", async (req, res) => {
 
 app.get("/api/auth/me", authMiddleware, async (req, res) => {
   const db = await loadDb();
-  const user = db.users.find(u => u.id === req.user.sub);
+  const user = db.users.find((u) => u.id === req.user.sub);
   if (!user) return res.status(404).json({ error: "Utente non trovato" });
   res.json({ user: { id: user.id, name: user.name, email: user.email } });
 });
@@ -158,5 +179,14 @@ app.post("/api/auth/logout", (_req, res) => {
   res.json({ ok: true });
 });
 
+/* ----------------------- FRONTEND BUILD ----------------------- */
+app.use(express.static(path.join(__dirname, "../dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../dist", "index.html"));
+});
+
 /* ----------------------- START ----------------------- */
-app.listen(PORT, () => console.log(`API in ascolto su http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`API + Frontend in ascolto su http://localhost:${PORT}`)
+);

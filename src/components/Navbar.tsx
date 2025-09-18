@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone } from "lucide-react"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -55,7 +55,7 @@ const Navbar = () => {
                 variant="default"
                 className="bg-[#FF6B6B] hover:bg-[#e85a5a] transition-smooth"
               >
-                CIAO
+                Area Utenti
               </Button>
             </Link>
           </div>
