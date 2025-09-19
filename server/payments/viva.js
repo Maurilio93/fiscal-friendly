@@ -1,7 +1,6 @@
 const express = require("express");
 const axios = require("axios");
-const { pool } = require("../db");
-
+const { pool } = require("../db"); // <-- destrutturazione corretta
 const router = express.Router();
 
 const isDemo = (process.env.VIVA_ENV || "demo") !== "live";
@@ -14,8 +13,6 @@ const API_BASE = isDemo
 const CHECKOUT_BASE = isDemo
   ? "https://demo.vivapayments.com"
   : "https://www.vivapayments.com";
-
-// -------------------- Helpers --------------------
 
 async function getAccessToken() {
   const basic = Buffer.from(
@@ -37,82 +34,25 @@ async function getAccessToken() {
   return data.access_token;
 }
 
-// Calcola il totale server-side leggendo i prezzi dal DB
-async function calcAmountAndLinesFromItems(items) {
-  if (!Array.isArray(items) || items.length === 0) {
-    throw new Error("Carrello vuoto");
-  }
-
-  // Leggi i prodotti dal DB (catalogo)
-  const ids = items.map((it) => String(it.id));
-  const [rows] = await pool.query(
-    `SELECT id, title, priceCents FROM products WHERE id IN (${ids.map(() => "?").join(",")})`,
-    ids
-  );
-
-  // mappa veloce id->prodotto
-  const byId = new Map(rows.map((r) => [String(r.id), r]));
-
-  let amountCents = 0;
-  const lines = [];
-
-  for (const it of items) {
-    const pid = String(it.id);
-    const qty = Math.max(1, Number(it.qty || 1));
-    const prod = byId.get(pid);
-
-    // --- FALLBACK DEMO ---
-    // Se non hai ancora la tabella products, puoi usare TEMPORANEAMENTE
-    // il prezzo passato dal client. Per produzione ELIMINALO.
-    const unit = prod ? Number(prod.priceCents) : Number(it.unitPriceCents);
-    const title = prod ? prod.title : (it.title || `item-${pid}`);
-
-    if (!Number.isFinite(unit) || unit <= 0) {
-      throw new Error(`Prezzo non valido per prodotto ${pid}`);
-    }
-
-    const lineTotal = unit * qty;
-    amountCents += lineTotal;
-    lines.push({
-      productId: pid,
-      title,
-      unitPriceCents: unit,
-      quantity: qty,
-      totalCents: lineTotal,
-    });
-  }
-
-  return { amountCents: Math.round(amountCents), lines };
+function computeAmountCents(payload) {
+  const n = Number(payload?.amountCents);
+  if (!Number.isFinite(n) || n <= 0) throw new Error("Importo non valido");
+  return Math.round(n);
 }
 
-async function retrieveTransaction(transactionId) {
-  const token = await getAccessToken();
-  const { data } = await axios.get(
-    `${API_BASE}/checkout/v2/transactions/${transactionId}`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-  return data;
-}
+// ---------- ROUTES ----------
 
-// -------------------- ROUTES --------------------
-
-// 1) CREA ORDINE (dal click "Paga ora")
-router.post("/api/payments/viva/order", express.json(), async (req, res) => {
+// Crea ordine
+router.post("/payments/viva/order", express.json(), async (req, res) => {
   try {
+    const amount = computeAmountCents(req.body);
     const customer = req.body?.customer || {};
-    const items = req.body?.items || [];
-
-    // 1.a Calcolo totale e preparo righe
-    const { amountCents, lines } = await calcAmountAndLinesFromItems(items);
-
-    // 1.b Token Viva
     const token = await getAccessToken();
 
-    // 1.c Crea ordine Viva
     const { data: order } = await axios.post(
       `${API_BASE}/checkout/v2/orders`,
       {
-        amount: amountCents,
+        amount,
         sourceCode: String(process.env.VIVA_SOURCE_CODE || "").trim(),
         customerTrns: "Ordine e-commerce",
         merchantTrns: `ordine-${Date.now()}`,
@@ -128,29 +68,12 @@ router.post("/api/payments/viva/order", express.json(), async (req, res) => {
 
     const orderCodeStr = String(order.orderCode);
 
-    // 1.d Salvo l'ordine come PENDING + cliente
+    // 🔹 Salva nel DB come PENDING
     await pool.query(
-      "INSERT INTO orders (orderCode, amountCents, status, customerEmail, customerName) VALUES (?, ?, 'PENDING', ?, ?)",
-      [orderCodeStr, amountCents, customer.email || null, customer.fullName || null]
+      "INSERT INTO orders (orderCode, amountCents, status) VALUES (?, ?, 'PENDING')",
+      [orderCodeStr, amount]
     );
 
-    // 1.e Salvo le righe del carrello
-    if (lines.length) {
-      const values = lines.map((ln) => [
-        orderCodeStr,
-        ln.productId,
-        ln.title,
-        ln.unitPriceCents,
-        ln.quantity,
-        ln.totalCents,
-      ]);
-      await pool.query(
-        "INSERT INTO order_items (orderCode, productId, title, unitPriceCents, quantity, totalCents) VALUES ?",
-        [values]
-      );
-    }
-
-    // 1.f Redirect URL Viva
     const color = process.env.BRAND_COLOR ? `&color=${process.env.BRAND_COLOR}` : "";
     const redirectUrl = `${CHECKOUT_BASE}/web/checkout?ref=${orderCodeStr}${color}`;
 
@@ -162,7 +85,17 @@ router.post("/api/payments/viva/order", express.json(), async (req, res) => {
   }
 });
 
-// 2) VERIFICA PAGAMENTO (chiamata al rientro dal checkout)
+// Recupera transazione
+async function retrieveTransaction(transactionId) {
+  const token = await getAccessToken();
+  const { data } = await axios.get(
+    `${API_BASE}/checkout/v2/transactions/${transactionId}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return data;
+}
+
+// Verifica pagamento
 router.post("/api/payments/viva/verify", express.json(), async (req, res) => {
   try {
     const { transactionId, orderCode } = req.body;

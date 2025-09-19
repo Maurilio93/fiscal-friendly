@@ -21,7 +21,6 @@ import {
   Building,
 } from "lucide-react";
 import SignupForm from "@/components/SignupForm";
-import CheckoutButton from "@/components/CheckoutButton";
 
 const Index = () => {
   return (
@@ -124,7 +123,6 @@ const Index = () => {
                 <CardDescription className="text-lg">
                   4 servizi inclusi
                 </CardDescription>
-                <CheckoutButton />
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-3">

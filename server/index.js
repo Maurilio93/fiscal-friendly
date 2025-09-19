@@ -9,15 +9,10 @@ const rateLimit = require("express-rate-limit");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const vivaRouter = require("./payments/viva");
-// const { sendWelcomeEmail } = require("./mailer"); // <-- se non lo usi, commenta
-// const { pool } = require("./db"); // se non lo usi, commenta
+const vivaRouter = require("./payments/viva"); // <— RIATTIVATO
+// const { pool } = require("./db"); // opzionale
 
 const app = express();
-const PORT = process.env.PORT || 4000;
-const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
-const DB_PATH = path.join(__dirname, "data", "db.json");
-
 app.set("trust proxy", 1);
 
 /* ----------------------- CORS ----------------------- */
@@ -28,17 +23,13 @@ const ALLOWED_ORIGINS = new Set([
   "https://adoring-varahamihira.217-154-2-74.plesk.page",
   "https://api.adoring-varahamihira.217-154-2-74.plesk.page",
 ]);
-
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (origin && ALLOWED_ORIGINS.has(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
     res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "Content-Type, Authorization"
-    );
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   }
   if (req.method === "OPTIONS") return res.sendStatus(204);
@@ -47,11 +38,18 @@ app.use((req, res, next) => {
 
 /* ----------------------- MIDDLEWARE ----------------------- */
 app.use(helmet());
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 100 })); // express-rate-limit v7
 app.use(express.json());
 app.use(cookieParser());
 
-/* ----------------------- DB JSON ----------------------- */
+// Log leggero per vedere se le richieste arrivano a Node
+app.use("/api", (req, _res, next) => {
+  console.log("[API]", req.method, req.path);
+  next();
+});
+
+/* ----------------------- DB JSON (utenti) ----------------------- */
+const DB_PATH = path.join(__dirname, "data", "db.json");
 async function ensureDb() {
   try {
     await fs.access(DB_PATH);
@@ -70,6 +68,8 @@ async function saveDb(db) {
 }
 
 /* ----------------------- UTILS ----------------------- */
+const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
+
 function newId() {
   return typeof crypto.randomUUID === "function"
     ? crypto.randomUUID()
@@ -102,21 +102,29 @@ function authMiddleware(req, res, next) {
 }
 
 /* ----------------------- API ROUTES ----------------------- */
-app.use(vivaRouter); // tutte le rotte /api/payments/viva/...
-
+// Health check
 app.get("/api/health", (_req, res) => res.json({ ok: true, ts: Date.now() }));
 
+app.post("/api/payments/viva/order", (req, res) => {
+  console.log("HIT /api/payments/viva/order", req.body);
+  return res.status(200).json({ ok: true, echo: req.body });
+});
+
+
+// Auth
 app.post("/api/auth/register", async (req, res) => {
   try {
     const { name, email, password } = req.body || {};
-    if (!name || !email || !password)
+    if (!name || !email || !password) {
       return res
         .status(400)
         .json({ error: "name, email e password sono obbligatori" });
+    }
 
     const db = await loadDb();
-    if (db.users.find((u) => u.email.toLowerCase() === String(email).toLowerCase()))
+    if (db.users.find((u) => u.email.toLowerCase() === String(email).toLowerCase())) {
       return res.status(409).json({ error: "Email già registrata" });
+    }
 
     const passwordHash = await bcrypt.hash(password, 10);
     const user = {
@@ -132,10 +140,6 @@ app.post("/api/auth/register", async (req, res) => {
     const token = signToken(user);
     setAuthCookie(res, token, req.headers.origin);
 
-    // sendWelcomeEmail(email, name).catch((err) =>
-    //   console.error("Mail welcome error:", err)
-    // );
-
     res.status(201).json({ user: { id: user.id, name: user.name, email: user.email } });
   } catch (e) {
     console.error("REGISTER ERROR:", e);
@@ -146,8 +150,9 @@ app.post("/api/auth/register", async (req, res) => {
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body || {};
-    if (!email || !password)
+    if (!email || !password) {
       return res.status(400).json({ error: "email e password sono obbligatori" });
+    }
 
     const db = await loadDb();
     const user = db.users.find(
@@ -179,14 +184,26 @@ app.post("/api/auth/logout", (_req, res) => {
   res.json({ ok: true });
 });
 
-/* ----------------------- FRONTEND BUILD ----------------------- */
-app.use(express.static(path.join(__dirname, "../dist")));
+// **PAGAMENTI VIVA** (tutto sotto /api/...)
+app.use("/api", vivaRouter);
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../dist", "index.html"));
+/* ----------------------- FRONTEND (SPA) ----------------------- */
+// Root del sito (es. /httpdocs)
+const clientRoot = path.join(__dirname, "..");
+app.use(express.static(clientRoot));
+
+// Fallback SPA per tutte le GET che NON iniziano con /api/
+app.get(/^\/(?!api\/).*/, (_req, res) => {
+  res.sendFile(path.join(clientRoot, "index.html"));
 });
 
-/* ----------------------- START ----------------------- */
-app.listen(PORT, () =>
-  console.log(`API + Frontend in ascolto su http://localhost:${PORT}`)
-);
+// export app (il listen lo fa /httpdocs/index.js)
+module.exports = app;
+
+// avvio diretto in dev
+if (require.main === module) {
+  const PORT = process.env.PORT || 4000;
+  app.listen(PORT, () =>
+    console.log(`API + Frontend in ascolto su http://localhost:${PORT}`)
+  );
+}

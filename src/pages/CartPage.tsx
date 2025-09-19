@@ -9,32 +9,49 @@ export default function CartPage() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  const payNow = async () => {
-    setErr(null);
-    if (!items.length) { setErr("Carrello vuoto"); return; }
-    if (!email || !fullName) { setErr("Inserisci nome ed email"); return; }
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_BASE}/api/payments/viva/order`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          items: items.map(i => ({ id: i.id, qty: i.qty })), // prezzi li calcola il server
-          customer: { email, fullName }
-        })
-      });
-      const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error || "Errore creazione ordine");
+const payNow = async () => {
+  setErr(null);
+  if (!items.length) { setErr("Carrello vuoto"); return; }
+  if (!email || !fullName) { setErr("Inserisci nome ed email"); return; }
+  setLoading(true);
+  try {
+    const res = await fetch(`${API_BASE}/api/payments/viva/order`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        items: items.map(i => ({ id: i.id, qty: i.qty })),
+        customer: { email, fullName }
+      })
+    });
 
-      localStorage.setItem("lastOrderCode", data.orderCode);
-      window.location.href = data.redirectUrl; // verso Viva
-    } catch (e: any) {
-      setErr(e.message || "Errore inatteso");
-    } finally {
-      setLoading(false);
+    // prova a leggere JSON; se fallisce, leggi come testo grezzo
+    let data: any = null;
+    let raw: string | null = null;
+    try { data = await res.json(); }
+    catch {
+      try { raw = await res.text(); } catch {}
     }
-  };
+
+    if (!res.ok || !data?.ok) {
+      const msg =
+        data?.error ||
+        data?.message ||
+        (raw && raw.slice(0, 200)) || // HTML di Plesk o stacktrace
+        `HTTP ${res.status}`;
+      setErr(`Errore creazione ordine: ${msg}`);
+      return;
+    }
+
+    // success
+    localStorage.setItem("lastOrderCode", data.orderCode);
+    window.location.href = data.redirectUrl;
+  } catch (e: any) {
+    setErr(`Errore inatteso: ${e?.message ?? String(e)}`);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="container" style={{maxWidth: 720, margin: "24px auto", padding: 16}}>
