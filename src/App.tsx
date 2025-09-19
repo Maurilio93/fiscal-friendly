@@ -17,7 +17,6 @@ import Contatti from "./pages/Contatti";
 import NotFound from "./pages/NotFound";
 
 // Checkout esistenti
-import CheckoutSuccess from "./pages/CheckoutSuccess";
 import CheckoutFailure from "./pages/CheckoutFailure";
 
 // 🛒 Carrello + Ritorno Viva
@@ -53,7 +52,6 @@ const App = () => (
                 <Route path="/checkout/cancel" element={<CheckoutFailure />} />
 
                 {/* Esistenti */}
-                <Route path="/checkout/success" element={<CheckoutSuccess />} />
                 <Route path="/checkout/failure" element={<CheckoutFailure />} />
 
                 <Route path="*" element={<NotFound />} />
