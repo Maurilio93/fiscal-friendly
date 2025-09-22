@@ -1,33 +1,24 @@
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
-
-async function handleJson(res: Response) {
-  let payload: any = null;
-  try { payload = await res.json(); } catch {}
-  if (!res.ok) throw new Error(payload?.error || `Errore ${res.status}`);
-  return payload;
+const BASE = "https://adoring-varahamihira.217-154-2-74.plesk.page";
+async function http<T>(path: string, init?: RequestInit) {
+  const res = await fetch(`${BASE}${path}`, {
+    credentials: "include", // <<< IMPORTANTE per inviare il cookie
+    headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
+    ...init,
+  });
+  if (!res.ok) throw new Error((await res.text()) || res.statusText);
+  return (await res.json()) as T;
 }
 
-export type RegisterInput = { name: string; email: string; password: string };
-
-export async function registerUser(data: RegisterInput) {
-  const res = await fetch(`${API_BASE}/api/auth/register`, {
+export const registerUser = (data:{name:string; email:string; password:string}) =>
+  http<{user:{id:string;name:string;email:string}}>("/api/auth/register", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include", // necessario per ricevere il cookie
     body: JSON.stringify(data),
   });
-  return handleJson(res);
-}
 
-export async function getMe() {
-  const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: "include" });
-  return handleJson(res);
-}
-
-export async function logout() {
-  const res = await fetch(`${API_BASE}/api/auth/logout`, {
+export const getMe = () => http<{user:{id:string;name:string;email:string}|null}>("/api/auth/me");
+export const login = (email:string, password:string) =>
+  http<{user:{id:string;name:string;email:string}}>("/api/auth/login", {
     method: "POST",
-    credentials: "include",
+    body: JSON.stringify({ email, password }),
   });
-  return handleJson(res);
-}
+export const logout = () => http<{ok:true}>("/api/auth/logout", { method: "POST" });

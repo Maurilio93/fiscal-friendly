@@ -1,179 +1,143 @@
-require("dotenv").config();
 const path = require("path");
-const fs = require("fs").promises;
-const crypto = require("crypto");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
+
+const fs = require("fs");
 const express = require("express");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { pool } = require("./db");
 
-
 const app = express();
-
-/* ----------------------- CONFIG ----------------------- */
-const PORT = process.env.PORT || 4000;
+const PORT = Number(process.env.PORT || 4000);
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
-const DB_PATH = path.join(__dirname, "data", "db.json");
+const COOKIE_NAME = process.env.COOKIE_NAME || "ff_auth";
 
-// se stai dietro proxy (Plesk/Nginx) per cookie e IP reali
-app.set("trust proxy", 1);
-
-/* ----------------------- MIDDLEWARE ----------------------- */
-app.use(helmet());
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
-app.use(express.json());
-app.use(cookieParser());
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "http://localhost:3000", "https://tuodominio.it"], // <-- metti il tuo dominio reale
-    credentials: true,
-  })
-);
-
-/* ----------------------- MINI DB JSON ----------------------- */
-async function ensureDb() {
+// --- logger semplice su file leggibile in Plesk (File Manager) ---
+const LOG_PATH = path.join(__dirname, "app.log");
+function flog(...args) {
   try {
-    await fs.access(DB_PATH);
-  } catch {
-    await fs.mkdir(path.dirname(DB_PATH), { recursive: true });
-    await fs.writeFile(DB_PATH, JSON.stringify({ users: [] }, null, 2));
-  }
+    fs.appendFileSync(
+      LOG_PATH,
+      new Date().toISOString() + " " + args.join(" ") + "\n"
+    );
+  } catch {}
 }
-async function loadDb() {
-  await ensureDb();
-  const raw = await fs.readFile(DB_PATH, "utf8");
-  return JSON.parse(raw || '{"users":[]}');
-}
-async function saveDb(db) {
-  await fs.writeFile(DB_PATH, JSON.stringify(db, null, 2));
-}
+// ------------------------------------------------------------------
 
-/* ----------------------- UTILS ----------------------- */
-function newId() {
-  return crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString("hex");
-}
-function signToken(user) {
-  return jwt.sign({ sub: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
+app.set("trust proxy", 1);
+app.use(helmet());
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 100 }));
+app.use(express.json({ limit: "1mb" }));
+app.use(cookieParser());
+
+// Se API e frontend sono su lo stesso dominio, NON serve CORS.
+// Se usi un dominio diverso, scommenta qui sotto:
+//
+// const cors = require("cors");
+// app.use(cors({
+//   origin: "https://TUO-DOMINIO",
+//   credentials: true
+// }));
+
+// ---------------- helpers ----------------
+function signToken(payload) {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 }
 function setAuthCookie(res, token) {
   const isProd = process.env.NODE_ENV === "production";
-  res.cookie("token", token, {
+  res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
-    sameSite: isProd ? "lax" : "lax",
-    secure: isProd,
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    sameSite: "lax",
+    secure: isProd, // true in HTTPS
     path: "/",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 }
-function authMiddleware(req, res, next) {
-  const token = req.cookies.token;
-  if (!token) return res.status(401).json({ error: "Not authenticated" });
+
+// ---------------- health -----------------
+app.get("/api/health", (_req, res) => res.json({ ok: true }));
+app.get("/api/health/db", async (_req, res) => {
   try {
-    const payload = jwt.verify(token, JWT_SECRET);
-    req.user = payload; // { sub, email, iat, exp }
-    next();
-  } catch {
-    return res.status(401).json({ error: "Invalid token" });
-  }
-}
-
-/* ----------------------- ROUTES ----------------------- */
-
-// health
-app.get("/api/health", (req, res) => {
-  res.json({ ok: true, ts: Date.now() });
-});
-
-app.get("/api/db-ping", async (req, res) => {
-  try {
-    const [rows] = await pool.query("SELECT 1 AS ok");
-    res.json({ db: rows[0].ok === 1 ? "ok" : "fail" });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "DB error" });
+    await pool.query("SELECT 1");
+    res.json({ db: "ok" });
+  } catch (err) {
+    flog("DB_HEALTH_ERR", err.message);
+    res.status(500).json({ error: "db_error" });
   }
 });
 
-
-// REGISTER (login automatico)
+// --------------- AUTH --------------------
+// POST /api/auth/register  {name, email, password}
 app.post("/api/auth/register", async (req, res) => {
   try {
     const { name, email, password } = req.body || {};
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: "name, email e password sono obbligatori" });
-    }
+    // validazioni minime
+    if (!name || typeof name !== "string" || name.trim().length < 2)
+      return res.status(400).json({ error: "invalid_name" });
+    const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRx.test(email)) return res.status(400).json({ error: "invalid_email" });
+    if (!password || password.length < 8) return res.status(400).json({ error: "weak_password" });
 
-    const db = await loadDb();
-    const exists = db.users.find(u => u.email.toLowerCase() === String(email).toLowerCase());
-    if (exists) return res.status(409).json({ error: "Email già registrata" });
+    // email unica?
+    const [rows] = await pool.query("SELECT id FROM users WHERE email = ?", [email.toLowerCase()]);
+    if (rows.length) return res.status(409).json({ error: "email_taken" });
 
-    const passwordHash = await bcrypt.hash(password, 10);
-    const user = {
-      id: newId(),
-      name,
-      email,
-      passwordHash,
-      createdAt: new Date().toISOString(),
-    };
-    db.users.push(user);
-    await saveDb(db);
-
-    const token = signToken(user);
-    setAuthCookie(res, token);
-
-    // 👇 invio mail NON bloccante (se fallisce, logga e continua)
-    sendWelcomeEmail(email, name).catch(err =>
-      console.error("Errore invio mail di benvenuto:", err)
+    const password_hash = await bcrypt.hash(password, 12);
+    const [result] = await pool.query(
+      "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+      [name.trim(), email.toLowerCase(), password_hash]
     );
 
-    return res.status(201).json({ user: { id: user.id, name: user.name, email: user.email } });
-  } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "Errore interno" });
+    const user = { id: result.insertId, name: name.trim(), email: email.toLowerCase() };
+    const token = signToken({ sub: user.id, email: user.email });
+    setAuthCookie(res, token);
+    res.status(201).json({ user });
+  } catch (err) {
+    flog("REGISTER_ERR", err.stack || err.message);
+    res.status(500).json({ error: "server_error" });
   }
 });
 
-
-// LOGIN
+// POST /api/auth/login  {email, password}
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body || {};
-    if (!email || !password) {
-      return res.status(400).json({ error: "email e password sono obbligatori" });
-    }
-    const db = await loadDb();
-    const user = db.users.find(u => u.email.toLowerCase() === String(email).toLowerCase());
-    if (!user) return res.status(401).json({ error: "Credenziali non valide" });
+    if (!email || !password) return res.status(400).json({ error: "missing_fields" });
 
-    const ok = await bcrypt.compare(password, user.passwordHash);
-    if (!ok) return res.status(401).json({ error: "Credenziali non valide" });
+    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [email.toLowerCase()]);
+    if (!rows.length) return res.status(401).json({ error: "invalid_credentials" });
 
-    const token = signToken(user);
+    const u = rows[0];
+    const ok = await bcrypt.compare(password, u.password_hash);
+    if (!ok) return res.status(401).json({ error: "invalid_credentials" });
+
+    const user = { id: u.id, name: u.name, email: u.email };
+    const token = signToken({ sub: user.id, email: user.email });
     setAuthCookie(res, token);
-    return res.json({ user: { id: user.id, name: user.name, email: user.email } });
-  } catch (e) {
-    console.error(e);
-    return res.status(500).json({ error: "Errore interno" });
+    res.json({ user });
+  } catch (err) {
+    flog("LOGIN_ERR", err.stack || err.message);
+    res.status(500).json({ error: "server_error" });
   }
 });
 
-// ME (protetta)
-app.get("/api/auth/me", authMiddleware, async (req, res) => {
-  const db = await loadDb();
-  const user = db.users.find(u => u.id === req.user.sub);
-  if (!user) return res.status(404).json({ error: "Utente non trovato" });
-  res.json({ user: { id: user.id, name: user.name, email: user.email } });
+// GET /api/auth/me  -> user da cookie
+app.get("/api/auth/me", (req, res) => {
+  try {
+    const token = req.cookies[COOKIE_NAME];
+    if (!token) return res.status(401).json({ user: null });
+    const payload = jwt.verify(token, JWT_SECRET);
+    res.json({ user: { id: payload.sub, email: payload.email } });
+  } catch {
+    res.status(401).json({ user: null });
+  }
 });
 
-// LOGOUT
-app.post("/api/auth/logout", (req, res) => {
-  res.clearCookie("token", { path: "/" });
-  res.json({ ok: true });
+// --------------- avvio -------------------
+app.listen(PORT, () => {
+  flog("SERVER_START", `port=${PORT} env=${process.env.NODE_ENV}`);
+  console.log(`API ready on :${PORT}`);
 });
-
-/* ----------------------- START ----------------------- */
-app.listen(PORT, () => console.log(`API in ascolto su http://localhost:${PORT}`));

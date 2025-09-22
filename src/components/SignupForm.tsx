@@ -13,8 +13,8 @@ export default function SignupForm() {
     try {
       await registerUser({ name, email, password });
       const me = await getMe(); // verifica sessione
-      alert(`Registrazione completata! Benvenut* ${me.user.name}.`);
-      // TODO: qui dopo faremo redirect all'area clienti
+      alert(`Registrazione completata! Benvenut* ${me.user?.name}.`);
+      // TODO: redirect all'area clienti
     } catch (err: any) {
       alert(err.message || "Errore durante la registrazione");
     } finally {
