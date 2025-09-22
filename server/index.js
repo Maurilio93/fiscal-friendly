@@ -9,6 +9,8 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { pool } = require("./db");
+
 
 const app = express();
 
@@ -86,6 +88,17 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true, ts: Date.now() });
 });
 
+app.get("/api/db-ping", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT 1 AS ok");
+    res.json({ db: rows[0].ok === 1 ? "ok" : "fail" });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "DB error" });
+  }
+});
+
+
 // REGISTER (login automatico)
 app.post("/api/auth/register", async (req, res) => {
   try {
@@ -93,6 +106,7 @@ app.post("/api/auth/register", async (req, res) => {
     if (!name || !email || !password) {
       return res.status(400).json({ error: "name, email e password sono obbligatori" });
     }
+
     const db = await loadDb();
     const exists = db.users.find(u => u.email.toLowerCase() === String(email).toLowerCase());
     if (exists) return res.status(409).json({ error: "Email già registrata" });
@@ -110,12 +124,19 @@ app.post("/api/auth/register", async (req, res) => {
 
     const token = signToken(user);
     setAuthCookie(res, token);
+
+    // 👇 invio mail NON bloccante (se fallisce, logga e continua)
+    sendWelcomeEmail(email, name).catch(err =>
+      console.error("Errore invio mail di benvenuto:", err)
+    );
+
     return res.status(201).json({ user: { id: user.id, name: user.name, email: user.email } });
   } catch (e) {
     console.error(e);
     return res.status(500).json({ error: "Errore interno" });
   }
 });
+
 
 // LOGIN
 app.post("/api/auth/login", async (req, res) => {
