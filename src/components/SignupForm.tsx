@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { registerUser, getMe } from "../lib/api";
+import { registerUser } from "../lib/api";
 
 import {
   Card,
@@ -14,26 +14,32 @@ import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 
 export default function SignupForm() {
-  // 👇 stessi state/campi/logica
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
+
     try {
       await registerUser({ name, email, password });
-      const me = await getMe(); // verifica sessione
-      alert(`Registrazione completata! Benvenut* ${me.user.name}.`);
-      // TODO: qui dopo faremo redirect all'area clienti
+
+      // ✅ svuota i campi
+      setName("");
+      setEmail("");
+      setPassword("");
+      // opzionale: reset anche del form HTML
+      e.currentTarget.reset();
+
+      alert("Registrazione completata!");
+      // TODO: eventuale redirect
+      // navigate("/", { replace: true });
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        alert(err.message || "Errore durante la registrazione");
-      } else {
-        alert("Errore durante la registrazione");
-      }
+      const msg = err instanceof Error ? err.message : "Errore durante la registrazione";
+      alert(msg);
     } finally {
       setLoading(false);
     }
@@ -43,9 +49,7 @@ export default function SignupForm() {
     <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 py-10">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="pb-3">
-          <CardTitle className="text-2xl tracking-tight">
-            Registrazione
-          </CardTitle>
+          <CardTitle className="text-2xl tracking-tight">Registrazione</CardTitle>
           <CardDescription>
             Crea il tuo account per accedere all’area clienti.
           </CardDescription>
@@ -61,6 +65,7 @@ export default function SignupForm() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Mario Rossi"
+                autoComplete="name"
               />
             </div>
 
@@ -73,6 +78,7 @@ export default function SignupForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@esempio.com"
+                autoComplete="email"
               />
             </div>
 
@@ -85,6 +91,7 @@ export default function SignupForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
+                autoComplete="new-password"
               />
             </div>
 
