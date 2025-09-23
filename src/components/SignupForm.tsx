@@ -28,8 +28,12 @@ export default function SignupForm() {
       const me = await getMe(); // verifica sessione
       alert(`Registrazione completata! Benvenut* ${me.user.name}.`);
       // TODO: qui dopo faremo redirect all'area clienti
-    } catch (err: any) {
-      alert(err.message || "Errore durante la registrazione");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        alert(err.message || "Errore durante la registrazione");
+      } else {
+        alert("Errore durante la registrazione");
+      }
     } finally {
       setLoading(false);
     }
