@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { registerUser } from "../lib/api";
 
 import {
@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 
 export default function SignupForm() {
+  const formRef = useRef<HTMLFormElement | null>(null);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,20 +27,28 @@ export default function SignupForm() {
     setLoading(true);
 
     try {
-      await registerUser({ name, email, password });
+      // normalizza i dati
+      const payload = {
+        name: name.trim() || undefined,              // opzionale se lato server hai il fallback
+        email: email.trim().toLowerCase(),
+        password,
+      };
 
-      // ✅ svuota i campi
+      await registerUser(payload);
+
+      // svuota stato
       setName("");
       setEmail("");
       setPassword("");
-      // opzionale: reset anche del form HTML
-      e.currentTarget.reset();
+
+      // reset HTML in modo sicuro (la ref non è null)
+      formRef.current?.reset();
 
       alert("Registrazione completata!");
-      // TODO: eventuale redirect
-      // navigate("/", { replace: true });
+      // eventualmente: navigate("/", { replace: true });
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Errore durante la registrazione";
+      const msg =
+        err instanceof Error ? err.message : "Errore durante la registrazione";
       alert(msg);
     } finally {
       setLoading(false);
@@ -56,12 +66,11 @@ export default function SignupForm() {
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={onSubmit} className="space-y-5" noValidate>
+          <form ref={formRef} onSubmit={onSubmit} className="space-y-5" noValidate>
             <div className="space-y-2">
               <Label htmlFor="name">Nome</Label>
               <Input
                 id="name"
-                required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Mario Rossi"
@@ -87,6 +96,7 @@ export default function SignupForm() {
               <Input
                 id="password"
                 required
+                minLength={8}
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
