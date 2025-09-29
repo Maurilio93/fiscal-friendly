@@ -12,7 +12,7 @@ const Footer = () => {
               <div className="bg-secondary p-2 rounded-lg">
                 <Phone className="h-5 w-5 text-secondary-foreground" />
               </div>
-              <span className="text-lg font-bold">ConsulFast</span>
+              <span className="text-lg font-bold">miniconsulenze</span>
             </div>
             <p className="text-sm text-primary-foreground/80">
               Soluzioni rapide e accessibili per cittadini, imprese e professionisti.
@@ -59,7 +59,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2 text-sm">
                 <Mail className="h-4 w-4 text-secondary" />
-                <span>info@consulfast.it</span>
+                <span>info@miniconsulenze.it</span>
               </div>
               <div className="flex items-start space-x-2 text-sm">
                 <MapPin className="h-4 w-4 text-secondary mt-0.5" />
@@ -75,7 +75,7 @@ const Footer = () => {
 
         <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center">
           <p className="text-sm text-primary-foreground/60">
-            © 2024 ConsulFast. Tutti i diritti riservati. | P.IVA 12345678901
+            © {new Date().getFullYear()} miniconsulenze. Tutti i diritti riservati. | P.IVA 12345678901
           </p>
         </div>
       </div>
