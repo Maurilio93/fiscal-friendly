@@ -28,10 +28,12 @@ import SignupForm from "@/components/SignupForm";
 const Index = () => {
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      {/* Hero */}
       <section
+        id="hero"
         className="text-primary-foreground py-20 px-4"
         style={{ backgroundColor: "#0D3B66" }}
+        aria-label="Introduzione"
       >
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -43,17 +45,6 @@ const Index = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {/* CTA informativa → sezione contatti */}
-            <a href="#contatti">
-              <Button
-                size="lg"
-                className="text-lg px-8 py-4 hover:opacity-90 transition-smooth"
-                style={{ backgroundColor: "#FF6B6B", color: "#fff" }}
-              >
-                Richiedi subito info per le tue esigenze
-              </Button>
-            </a>
-
             {/* Scorri ai servizi */}
             <a href="#servizi">
               <Button
@@ -81,8 +72,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Benefits Banner */}
-      <section className="py-16 bg-muted">
+      {/* Benefits */}
+      <section className="py-16 bg-muted" aria-label="Vantaggi principali">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div className="flex flex-col items-center space-y-4">
@@ -102,24 +93,26 @@ const Index = () => {
               <h3 className="text-xl font-semibold">
                 Scegli la soluzione per te
               </h3>
-              <p className="text-muted-foreground">Tariffe e trasparenti</p>
+              <p className="text-muted-foreground">
+                Tariffe chiare e trasparenti
+              </p>
             </div>
 
             <div className="flex flex-col items-center space-y-4">
               <div className="bg-primary p-4 rounded-full">
                 <Shield className="h-8 w-8 text-primary-foreground" />
               </div>
-              <h3 className="text-xl font-semibold">Ok il resto</h3>
+              <h3 className="text-xl font-semibold">Zero pensieri</h3>
               <p className="text-muted-foreground">
-                Pensiamo noi alle pratiche
+                Alle pratiche pensiamo noi
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="prezzi" className="py-20 px-4">
+      {/* Pricing */}
+      <section id="prezzi" className="py-20 px-4" aria-label="Prezzi e piani">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -162,13 +155,13 @@ const Index = () => {
                 </div>
                 <div className="pt-4">
                   <Link to="/area-utenti" className="block">
-                    <Button className="w-full bg-gradient-hero hover:opacity-90">
+                    <Button className="w-full bg-gradient-hero hover:opacity-9">
                       Abbonati ora
                     </Button>
                   </Link>
                 </div>
               </CardContent>
-              <Badge className="w-fit mx-auto mb-6 bg-secondary text-secondary-foreground flex ">
+              <Badge className="w-fit mx-auto mb-6 bg-secondary text-secondary-foreground flex center">
                 Consigliato
               </Badge>
             </Card>
@@ -215,8 +208,12 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Services Preview */}
-      <section id="servizi" className="py-20 bg-muted px-4">
+      {/* Services */}
+      <section
+        id="servizi"
+        className="py-20 bg-muted px-4"
+        aria-label="Anteprima servizi"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -274,7 +271,6 @@ const Index = () => {
                 <p>• Contratti di locazione</p>
                 <p>• Comodati d’uso gratuito</p>
                 <p>• Scritture private</p>
-                {/* Rimosso: Visure e certificati (spostato su Imprese) */}
               </CardContent>
             </Card>
 
@@ -304,14 +300,18 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA + Contatti in fondo (sostituisce “Richiedi subito una consulenza”) */}
-      <section id="contatti" className="py-20 px-4 bg-muted/30">
+      {/* Contatti in fondo */}
+      <section
+        id="contatti"
+        className="py-20 px-4 bg-muted/30"
+        aria-label="Contatti e canali di supporto"
+      >
         <div className="max-w-7xl xl:max-w-[1280px] mx-auto">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
               Contattaci ora
             </h2>
-            <p className="text-lg md:text-xl text-muted-foreground mb-12 leading-relaxed">
+            <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed">
               <span className="font-semibold">Pronto a iniziare?</span> Non
               perdere altro tempo con procedure complicate: i nostri esperti
               sono qui per aiutarti a risolvere i tuoi problemi.{" "}
@@ -319,10 +319,27 @@ const Index = () => {
                 Contattaci con fiducia adesso.
               </span>
             </p>
+
+            {/* CTA spostata qui dal Hero */}
+            <a
+              href="#contatti"
+              className="text-lg font-semibold px-6 py-3 rounded-md mr-3"
+              style={{ backgroundColor: "#0D3B66", color: "#fff" }}
+            >
+              Richiedi subito info per le tue esigenze
+            </a>
+
+            {/* Icona telefono separata */}
+            <a
+              href="tel:+393318341262"
+              className="inline-flex items-center justify-center rounded-full p-4 bg-[#0D3B66] hover:opacity-90 transition-smooth"
+            >
+              <Phone className="h-4 w-4 text-white" />
+            </a>
           </div>
 
-          {/* 4 cards in linea da lg */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* 4 card */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
             {/* Telefono */}
             <Card className="h-full rounded-2xl border shadow-elegant hover:shadow-glow transition-smooth">
               <CardHeader className="pb-3">
@@ -436,7 +453,7 @@ const Index = () => {
             </Card>
           </div>
 
-          {/* puoi tenere il form iscrizione qui, se vuoi */}
+          {/* (opzionale) form iscrizione */}
           <div className="max-w-4xl mx-auto text-center mt-12">
             <SignupForm />
           </div>

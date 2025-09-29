@@ -26,7 +26,7 @@ const Navbar = () => {
             <div className="bg-gradient-hero p-2 rounded-lg">
               <Phone className="h-6 w-6 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-primary">ConsulFast</span>
+            <span className="text-xl font-bold text-primary">Miniconsulenze</span>
           </Link>
 
           {/* Desktop Navigation */}
