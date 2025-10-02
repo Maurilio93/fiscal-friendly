@@ -1,501 +1,102 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+// src/pages/Servizi.tsx
+import { Link } from "react-router-dom";
+import { SERVICES } from "../data/service"; // o ../data/services
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
 import {
-  Calculator,
-  Building,
-  FileText,
-  Phone,
-  CheckCircle,
-  ArrowRight,
-  TrendingUp,
-  BarChart3,
-  Target,
-  Lightbulb,
+  Briefcase,  // Business plan
+  Calculator, // Contabilità
+  BarChart3,  // Analisi di bilanci
+  Shuffle,    // Cessione quote societarie
 } from "lucide-react";
-import { useCart } from "@/cart/CartContext";
 
-const Servizi = () => {
-  const { add } = useCart();
-  const navigate = useNavigate();
-
-  const addAbbonamento = () => {
-    // id e priceCents devono esistere in tabella `products` lato server
-    // es: ('abbonamento_annuale', 'Abbonamento Annuale', 10000)
-    add({
-      id: "abbonamento_annuale",
-      title: "Abbonamento Annuale",
-      unitPriceCents: 10000,
-    });
-    navigate("/cart");
-  };
-
-  const addOccasionale = () => {
-    // es: ('servizio_occasionale', 'Servizio Occasionale', 4000)
-    add({
-      id: "servizio_occasionale",
-      title: "Servizio Occasionale",
-      unitPriceCents: 4000,
-    });
-    navigate("/cart");
-  };
-
-  return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-[#0D3B66] text-primary-foreground py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            I Nostri Servizi
-          </h1>
-          <p className="text-xl md:text-2xl text-primary-foreground/90">
-            Tutto quello di cui hai bisogno per la tua attività e la tua vita
-            professionale
-          </p>
-        </div>
-      </section>
-
-      {/* Pricing Overview */}
-      <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 bg-secondary text-secondary-foreground">
-              Prezzi trasparenti
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Scegli la formula che fa per te
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
-            {/* Abbonamento */}
-            <Card className="shadow-elegant hover:shadow-glow transition-smooth border-secondary border-2">
-              <CardHeader className="text-center pb-8">
-                <Badge className="w-fit mx-auto mb-4 bg-secondary text-secondary-foreground">
-                  Consigliato
-                </Badge>
-                <CardTitle className="text-2xl">Abbonamento Annuale</CardTitle>
-                <div className="text-4xl font-bold text-primary">
-                  €100
-                  <span className="text-lg text-muted-foreground"> + IVA</span>
-                </div>
-                <CardDescription className="text-lg">
-                  4 servizi inclusi
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Se vuoi mantenere il vecchio flusso di onboarding */}
-                  <Link to="/area-utenti" className="block">
-                    <Button className="w-full bg-gradient-hero hover:opacity-90">
-                      Abbonati Ora
-                    </Button>
-                  </Link>
-                  {/* ➕ Nuovo: aggiungi al carrello */}
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={addAbbonamento}
-                  >
-                    Aggiungi al carrello
-                  </Button>
-                </div>
-                <p className="text-sm text-muted-foreground text-center mt-4">
-                  Ideale per chi ha bisogno di più servizi durante l&apos;anno
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Occasionale */}
-            <Card className="shadow-elegant hover:shadow-glow transition-smooth">
-              <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl">Servizi Occasionali</CardTitle>
-                <div className="text-4xl font-bold text-primary">
-                  €40
-                  <span className="text-lg text-muted-foreground"> + IVA</span>
-                </div>
-                <CardDescription className="text-lg">
-                  A singolo servizio
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Link to="/contatti" className="block">
-                    <Button variant="outline" className="w-full">
-                      Richiedi Servizio
-                    </Button>
-                  </Link>
-                  {/* ➕ Nuovo: aggiungi al carrello */}
-                  <Button
-                    className="w-full bg-gradient-hero hover:opacity-90"
-                    onClick={addOccasionale}
-                  >
-                    Aggiungi al carrello
-                  </Button>
-                </div>
-                <p className="text-sm text-muted-foreground text-center mt-4">
-                  Perfetto per esigenze specifiche e occasionali
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-      
-      {/* Services Categories */}
-      <section className="py-20 bg-muted px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Servizi inclusi nell'abbonamento
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Suddivisi per categorie per aiutarti a orientarti
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Fisco e Tributi */}
-            <Card className="shadow-elegant hover:shadow-glow transition-smooth gradient-card">
-              <CardHeader>
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="bg-secondary p-3 rounded-full">
-                    <Calculator className="h-6 w-6 text-secondary-foreground" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl">Fisco e Tributi</CardTitle>
-                    <CardDescription>
-                      Tutto per le tue questioni fiscali
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-secondary flex-shrink-0" />
-                  <span>Compilazione dichiarazioni fiscali</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-secondary flex-shrink-0" />
-                  <span>Gestione cartelle esattoriali</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-secondary flex-shrink-0" />
-                  <span>Istanze di sgravio e rimborsi</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-secondary flex-shrink-0" />
-                  <span>Comunicazioni IVA</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-secondary flex-shrink-0" />
-                  <span>Ravvedimenti operosi</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Imprese e Professionisti */}
-            <Card className="shadow-elegant hover:shadow-glow transition-smooth gradient-card">
-              <CardHeader>
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="bg-accent p-3 rounded-full">
-                    <Building className="h-6 w-6 text-accent-foreground" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl">
-                      Imprese e Professionisti
-                    </CardTitle>
-                    <CardDescription>
-                      Servizi per la tua attività
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
-                  <span>Apertura/chiusura partita IVA</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
-                  <span>Iscrizione Camera di Commercio</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
-                  <span>Deposito bilanci</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
-                  <span>Adempimenti societari</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
-                  <span>Variazioni anagrafiche</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Contratti e Registrazioni */}
-            <Card className="shadow-elegant hover:shadow-glow transition-smooth gradient-card">
-              <CardHeader>
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="bg-primary p-3 rounded-full">
-                    <FileText className="h-6 w-6 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl">
-                      Contratti e Registrazioni
-                    </CardTitle>
-                    <CardDescription>
-                      Documenti e pratiche legali
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Contratti di locazione</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Comodati d'uso</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Scritture private</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Visure camerali e catastali</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Certificati vari</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Consulenze Rapide */}
-            <Card className="shadow-elegant hover:shadow-glow transition-smooth gradient-card">
-              <CardHeader>
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="bg-secondary p-3 rounded-full">
-                    <Phone className="h-6 w-6 text-secondary-foreground" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl">Consulenze Rapide</CardTitle>
-                    <CardDescription>
-                      Supporto immediato quando serve
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-secondary flex-shrink-0" />
-                  <span>Consulenze telefoniche</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-secondary flex-shrink-0" />
-                  <span>Supporto via email</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-secondary flex-shrink-0" />
-                  <span>Lettere di contestazione</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-secondary flex-shrink-0" />
-                  <span>Chiarimenti normativi</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-secondary flex-shrink-0" />
-                  <span>Orientamento su adempimenti</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Extra Services */}
-      <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Servizi Extra
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Servizi specialistici per esigenze più complesse
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="shadow-elegant hover:shadow-glow transition-smooth text-center">
-              <CardHeader>
-                <div className="bg-secondary p-4 rounded-full w-fit mx-auto mb-4">
-                  <TrendingUp className="h-6 w-6 text-secondary-foreground" />
-                </div>
-                <CardTitle className="text-lg">Contabilità</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Ordinaria e semplificata per la tua attività
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-elegant hover:shadow-glow transition-smooth text-center">
-              <CardHeader>
-                <div className="bg-accent p-4 rounded-full w-fit mx-auto mb-4">
-                  <Target className="h-6 w-6 text-accent-foreground" />
-                </div>
-                <CardTitle className="text-lg">Business Plan</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">
-                  E piani di risanamento aziendale
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-elegant hover:shadow-glow transition-smooth text-center">
-              <CardHeader>
-                <div className="bg-primary p-4 rounded-full w-fit mx-auto mb-4">
-                  <BarChart3 className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <CardTitle className="text-lg">Analisi Bilanci</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">
-                  E rating bancario per finanziamenti
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-elegant hover:shadow-glow transition-smooth text-center">
-              <CardHeader>
-                <div className="bg-secondary p-4 rounded-full w-fit mx-auto mb-4">
-                  <Lightbulb className="h-6 w-6 text-secondary-foreground" />
-                </div>
-                <CardTitle className="text-lg">Marketing</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Piani marketing e studi di fattibilità
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="text-center mt-12">
-            <Link to="/contatti">
-              <Button size="lg" className="bg-gradient-hero hover:opacity-90">
-                Richiedi Preventivo
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Preview */}
-      <section className="py-20 bg-muted px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Domande Frequenti
-            </h2>
-          </div>
-
-          <div className="space-y-6">
-            <Card className="shadow-elegant">
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  Qual è la differenza tra abbonamento e servizi occasionali?
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  L'abbonamento annuale include 4 servizi + consulenze
-                  illimitate per €100+IVA. I servizi occasionali costano €40+IVA
-                  ciascuno senza vincoli di abbonamento.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-elegant">
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  Posso cambiare da occasionale ad abbonamento?
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Assolutamente sì. Puoi passare all'abbonamento in qualsiasi
-                  momento e avrai accesso immediato a tutti i vantaggi inclusi.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-elegant">
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  I servizi extra sono inclusi nell'abbonamento?
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  I servizi extra come contabilità, business plan e analisi
-                  bilanci richiedono un preventivo dedicato in base alla
-                  complessità del lavoro richiesto.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-primary text-primary-foreground px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Inizia subito</h2>
-          <p className="text-xl mb-8 text-primary-foreground/90">
-            Scegli la soluzione più adatta alle tue esigenze e inizia a
-            risparmiare tempo e denaro
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/area-utenti">
-              <Button
-                size="lg"
-                variant="secondary"
-                className="text-lg px-8 py-4"
-              >
-                Abbonati Ora
-              </Button>
-            </Link>
-            <Link to="/contatti">
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-lg px-8 py-4 bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
-              >
-                <Phone className="mr-2 h-5 w-5" />
-                Richiedi Consulenza
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
+const ICONS: Record<string, React.ComponentType<unknown>> = {
+  "contabilita": Calculator,
+  "business-plan": Briefcase,
+  "analisi-bilanci": BarChart3,
+  "cessione-quote-societarie": Shuffle,
 };
 
-export default Servizi;
+export default function Servizi() {
+  return (
+    <>
+      {/* HERO blu in stile "Chi Siamo" */}
+      <section className="bg-[#0E3B63] text-white">
+        <div className="max-w-6xl mx-auto px-4 py-14 md:py-20 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+            Servizi Extra
+          </h1>
+          <p className="text-white/90 mt-3 text-lg md:text-xl">
+            Servizi specialistici per esigenze più complesse
+          </p>
+        </div>
+      </section>
+
+      {/* Contenuto: griglia 2 colonne centrata */}
+      <section className="py-12 md:py-16">
+        {/* max-w-4xl per tenere 2 colonne ben centrate */}
+        <div className="max-w-4xl mx-auto px-4 grid gap-6 sm:grid-cols-2">
+          {SERVICES.map((s) => {
+            const Icon = ICONS[s.id] ?? Briefcase;
+            return (
+              <Link
+                key={s.id}
+                to={`/servizi/${s.id}`}
+                className="group focus:outline-none"
+              >
+                <Card
+                  className="
+                    h-full border border-transparent
+                    hover:border-primary/30 hover:shadow-xl
+                    transition-all duration-300 ease-out
+                    hover:-translate-y-0.5
+                  "
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="
+                          size-10 rounded-2xl
+                          bg-primary/10 grid place-items-center
+                          transition-colors group-hover:bg-primary/15
+                        "
+                      >
+                        <Icon className="size-5 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <CardTitle className="text-xl leading-tight">
+                          {s.title}
+                        </CardTitle>
+                        {s.subtitle && (
+                          <p className="text-sm text-muted-foreground line-clamp-1">
+                            {s.subtitle}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="pt-0 text-sm text-muted-foreground">
+                    <p className="line-clamp-3">{s.bullets[0]}</p>
+
+                    <div className="mt-4 flex items-center justify-between">
+                      <span className="underline decoration-primary/40 underline-offset-4 group-hover:decoration-primary">
+                        Clicca per i dettagli
+                      </span>
+                      <Badge
+                        variant="secondary"
+                        className="bg-primary/10 text-primary group-hover:bg-primary/15 transition-colors"
+                      >
+                        Approfondisci
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+    </>
+  );
+}

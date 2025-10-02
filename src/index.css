@@ -2,9 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here.
 All colors MUST be HSL.
 */
+/* index.css o globals.css */
+.transition-smooth {
+  transition: all 300ms cubic-bezier(.2,.7,.2,1);
+}
+
+
+/* src/index.css o globale */
+html {
+  scroll-behavior: smooth;
+}
 
 @layer base {
   :root {
@@ -120,19 +130,19 @@ All colors MUST be HSL.
   .gradient-hero {
     background: var(--gradient-hero);
   }
-  
+
   .gradient-card {
     background: var(--gradient-card);
   }
-  
+
   .shadow-elegant {
     box-shadow: var(--shadow-elegant);
   }
-  
+
   .shadow-glow {
     box-shadow: var(--shadow-glow);
   }
-  
+
   .transition-smooth {
     transition: var(--transition-smooth);
   }

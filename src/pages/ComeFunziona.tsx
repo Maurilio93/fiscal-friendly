@@ -174,7 +174,6 @@ const ComeFunziona = () => {
             {/* Abbonamento */}
             <Card className="shadow-elegant hover:shadow-glow transition-smooth border-secondary border-2">
               <CardHeader className="text-center">
-                <Badge className="w-fit mx-auto mb-4 bg-secondary text-secondary-foreground">Consigliato</Badge>
                 <CardTitle className="text-2xl">Abbonamento Prepagato</CardTitle>
                 <div className="text-3xl font-bold text-primary">€100 + IVA</div>
                 <p className="text-muted-foreground">4 servizi inclusi + consulenze illimitate</p>

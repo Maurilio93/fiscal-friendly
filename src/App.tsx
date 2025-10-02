@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ThankYouPage from "./pages/Thankyoupage";
+import ThankYouPage from "./pages/ThankYouPage";
 import Index from "./pages/Index";
 import ChiSiamo from "./pages/ChiSiamo";
 import Servizi from "./pages/Servizi";
@@ -17,6 +17,8 @@ import NotFound from "./pages/NotFound";
 import CheckoutFailurePage from "./pages/CheckoutFailurePage";
 import { CartProvider } from "./cart/CartContext";
 import CartPage from "./pages/CartPage";
+import ScrollToTop from "./components/ScrollToTop";
+import ServiceDetail from "./pages/ServiceDetail";
 
 
 const queryClient = new QueryClient();
@@ -27,6 +29,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+      <ScrollToTop />
         {/* CartProvider rende disponibile lo stato carrello a tutta l'app */}
         <CartProvider>
           <div className="min-h-screen flex flex-col">
@@ -44,6 +47,8 @@ const App = () => (
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkout/failure" element={<CheckoutFailurePage />} />
                 <Route path="*" element={<NotFound />} />
+                <Route path="/servizi/:id" element={<ServiceDetail />} />
+                <Route path="/servizi" element={<Servizi/>} />
               </Routes>
             </main>
             <Footer />
