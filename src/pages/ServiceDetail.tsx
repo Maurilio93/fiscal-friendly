@@ -52,30 +52,25 @@ export default function ServiceDetail() {
 
           {/* --- CTA sotto ogni servizio --- */}
           <div
-            className="
-    mt-8 rounded-xl border p-6
-    bg-muted/30
-  "
+            className="mt-8 rounded-xl border p-6 bg-muted/30"
           >
-            <p className="mb-5 font-medium text-lg">{svc.noteCta}</p>
-
             <div className="flex flex-wrap gap-4">
               <Link to="/contatti">
-                <Button className="flex items-center gap-2">
+                <Button className="flex items-center gap-2 bg-[#0E3B63] hover:bg-[#0E3B63]/90">
                   <FileText className="size-4" />
                   Compila il form
                 </Button>
               </Link>
 
               <a href="tel:+390000000000">
-                <Button variant="secondary" className="flex items-center gap-2">
+                <Button className="flex items-center gap-2 bg-[#FF6B6B] hover:bg-[#FF6B6B]/90">
                   <Phone className="size-4" />
                   Chiama
                 </Button>
               </a>
 
               <a href="mailto:info@tuodominio.it">
-                <Button variant="secondary" className="flex items-center gap-2">
+                <Button className="flex items-center gap-2 bg-[#FF6B6B] hover:bg-[#FF6B6B]/90">
                   <Mail className="size-4" />
                   Scrivi una mail
                 </Button>
