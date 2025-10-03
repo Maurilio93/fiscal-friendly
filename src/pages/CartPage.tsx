@@ -1,23 +1,19 @@
 import React, { useState } from "react";
 import { useCart } from "../cart/CartContext";
-import { API_BASE } from "../lib/api";
+import { createVivaOrder, VivaOrderItem } from "../lib/api";
 
 type CartItem = {
   id: string;
   qty: number;
   title?: string;
   unitPriceCents?: number;
-  price?: number;
-};
-
-type ApiOrderResponse = {
-  paymentUrl: string;
-  orderCode: number;
+  price?: number; // usato solo per fallback → trasformato in cents
 };
 
 export default function CartPage() {
   const { items, setQty, remove, clear, totalClientCents } = useCart();
-  const cartItems = items as CartItem[]; 
+  const cartItems = items as CartItem[];
+
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,59 +21,35 @@ export default function CartPage() {
 
   const payNow = async () => {
     setErr(null);
+
     if (!cartItems.length) { setErr("Carrello vuoto"); return; }
     if (!email || !fullName) { setErr("Inserisci nome ed email"); return; }
 
+    // Prepara payload conforme all'API
+    const vivaItems: VivaOrderItem[] = cartItems.map((it) => ({
+      id: it.id,
+      qty: it.qty,
+      unitPriceCents:
+        typeof it.unitPriceCents === "number"
+          ? it.unitPriceCents
+          : Math.round(((it.price ?? 0) as number) * 100),
+      title: it.title ?? it.id,
+    }));
+
     setLoading(true);
     try {
-      const payload = {
-        customer: { email, fullName },
-        items: cartItems.map((it: CartItem) => ({
-          id: it.id,
-          qty: it.qty,
-          unitPriceCents:
-            typeof it.unitPriceCents === "number"
-              ? it.unitPriceCents
-              : Math.round(((it.price ?? 0) as number) * 100),
-          title: it.title ?? it.id,
-        })),
-      };
-
-      const res = await fetch(`${API_BASE}/api/payments/viva/order`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
+      const { paymentUrl, orderCode } = await createVivaOrder({
+        customer: { email: email.trim(), fullName: fullName.trim() },
+        items: vivaItems,
       });
 
-      // prova JSON, fallback a testo grezzo (es. HTML d’errore da server)
-      let data: unknown = null;
-      let raw: string | null = null;
-      try { data = await res.json(); }
-      catch { try { raw = await res.text(); } catch { /* ignore */ } }
+      try { localStorage.setItem("lastOrderCode", String(orderCode ?? "")); } catch { /* no-op */ }
 
-      if (!res.ok) {
-        const msg =
-          (typeof data === "object" && data && "error" in data && String((data as { error: unknown }).error)) ||
-          (typeof data === "object" && data && "message" in data && String((data as { message: unknown }).message)) ||
-          (raw ? raw.slice(0, 200) : "") ||
-          `HTTP ${res.status}`;
-        setErr(`Errore creazione ordine: ${msg}`);
-        return;
-      }
-
-      const j = data as Partial<ApiOrderResponse> | null;
-      if (!j?.paymentUrl) {
-        setErr("Risposta non valida dal server (manca paymentUrl).");
-        return;
-      }
-
-      try { localStorage.setItem("lastOrderCode", String(j.orderCode ?? "")); } catch { /* no-op */ }
-
-      window.location.href = j.paymentUrl; // redirect a Viva
+      // Redirect a Viva
+      window.location.href = paymentUrl;
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
-      setErr(`Errore inatteso: ${msg}`);
+      setErr(`Errore creazione ordine: ${msg}`);
     } finally {
       setLoading(false);
     }
@@ -89,7 +61,7 @@ export default function CartPage() {
 
       {!cartItems.length && <p>Il carrello è vuoto.</p>}
 
-      {cartItems.map((it: CartItem) => (
+      {cartItems.map((it) => (
         <div
           key={it.id}
           style={{

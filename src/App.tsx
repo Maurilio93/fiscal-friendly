@@ -19,7 +19,8 @@ import { CartProvider } from "./cart/CartContext";
 import CartPage from "./pages/CartPage";
 import ScrollToTop from "./components/ScrollToTop";
 import ServiceDetail from "./pages/ServiceDetail";
-
+import Login from "./pages/Login";
+import SignupForm from "./components/SignupForm";
 
 const queryClient = new QueryClient();
 
@@ -29,8 +30,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-      <ScrollToTop />
-        {/* CartProvider rende disponibile lo stato carrello a tutta l'app */}
+        <ScrollToTop />
         <CartProvider>
           <div className="min-h-screen flex flex-col">
             <Navbar />
@@ -46,9 +46,10 @@ const App = () => (
                 <Route path="/checkout/success" element={<ThankYouPage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkout/failure" element={<CheckoutFailurePage />} />
-                <Route path="*" element={<NotFound />} />
                 <Route path="/servizi/:id" element={<ServiceDetail />} />
-                <Route path="/servizi" element={<Servizi/>} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/registrazione" element={<SignupForm />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
             <Footer />

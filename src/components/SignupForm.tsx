@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
-import { registerUser } from "../lib/api"; 
+import { useNavigate, Link } from "react-router-dom";
+import { registerUser } from "../lib/api";
 
 import {
   Card,
@@ -11,10 +12,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
 
 export default function SignupForm() {
   const formRef = useRef<HTMLFormElement | null>(null);
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +28,7 @@ export default function SignupForm() {
     setLoading(true);
     try {
       await registerUser({
-        name: name.trim() || undefined,
+        name: name.trim(),
         email: email.trim().toLowerCase(),
         password,
       });
@@ -34,9 +36,13 @@ export default function SignupForm() {
       setEmail("");
       setPassword("");
       formRef.current?.reset();
-      alert("Registrazione completata!");
+      // dopo registrazione → redirect a login (senza auto login)
+      navigate("/login", { replace: true, state: { justRegistered: true } });
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Errore durante la registrazione";
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "Errore durante la registrazione";
       alert(msg);
     } finally {
       setLoading(false);
