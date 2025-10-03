@@ -21,7 +21,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import ServiceDetail from "./pages/ServiceDetail";
 import Login from "./pages/Login";
 import SignupForm from "./components/SignupForm";
-
+import CommercialistiPage from "./pages/Commercialisti";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -41,6 +41,7 @@ const App = () => (
                 <Route path="/servizi" element={<Servizi />} />
                 <Route path="/come-funziona" element={<ComeFunziona />} />
                 <Route path="/area-utenti" element={<AreaUtenti />} />
+                <Route path="/commercialisti" element={<CommercialistiPage />} />
                 <Route path="/lavora-con-noi" element={<LavoraConNoi />} />
                 <Route path="/contatti" element={<Contatti />} />
                 <Route path="/checkout/success" element={<ThankYouPage />} />

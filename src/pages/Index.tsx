@@ -36,15 +36,25 @@ const Index = () => {
         aria-label="Introduzione"
       >
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Zero burocrazia e nessuna perdita di tempo: ci pensiamo noi
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 md:mb-6 leading-tight">
+            Soluzioni rapide e accessibili
+            <span className="block text-[#FFEB3B] mt-2">
+              Ci pensiamo a tutto noi
+            </span>
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-primary-foreground/90 max-w-3xl mx-auto">
-            Supporto professionale per problemi fiscali, tributari, legali,
-            lavorativi e finanziari.
-          </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          {/* descrizione su UNA riga su schermi medi+ */}
+          <div className="mt-6 flex justify-center px-4">
+            <p
+              className="text-white/90 whitespace-nowrap leading-snug text-center"
+              style={{ fontSize: "clamp(14px, 2.2vw, 24px)", maxWidth: "100%" }}
+            >
+              Supporto professionale per cittadini, imprese e professionisti:
+              pratiche CCIAA, bilanci, atti, business plan e molto altro.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
             {/* Scorri ai servizi */}
             <a href="#servizi">
               <Button
@@ -69,6 +79,28 @@ const Index = () => {
               </Button>
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* Teaser Commercialisti: card gialla che porta alla pagina dedicata */}
+      <section className="py-10 px-4" aria-label="Pacchetto Commercialisti">
+        <div className="max-w-7xl mx-auto">
+          <Link to="/commercialisti">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow border-2 border-yellow-100 bg-yellow-50 text-center">
+              <CardHeader>
+                <CardTitle className="text-xl md:text-2xl font-bold text-amber-800">
+                  Pacchetto speciale per commercialisti
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-amber-900">
+                <p className="text-base md:text-lg">
+                  Trasferite a noi gli adempimenti per i vostri clienti che vi
+                  fanno perdere tempo prezioso a prezzi davvero irrisori.{" "}
+                  <span className="underline">Approfondisci</span>
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       </section>
 
@@ -338,7 +370,7 @@ const Index = () => {
             </a>
           </div>
 
-          {/* 4 card */}
+          {/* 4 card contatti */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
             {/* Telefono */}
             <Card className="h-full rounded-2xl border shadow-elegant hover:shadow-glow transition-smooth">
