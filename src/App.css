@@ -40,3 +40,29 @@
 .read-the-docs {
   color: #888;
 }
+
+/* blocca lo scroll orizzontale globale */
+html, body, #root {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* niente sorprese con il box model */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* media responsive sempre contenuti nel contenitore */
+img, video, canvas, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Safari iOS: aiuta con layout che “saltano” */
+:root { -webkit-text-size-adjust: 100%; }
+
+
+html, body, #root { height: 100%; overflow-x: hidden; }
+*, *::before, *::after { box-sizing: border-box; }
+img, video, canvas, svg { max-width: 100%; height: auto; }
+:root { -webkit-text-size-adjust: 100%; }

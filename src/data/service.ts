@@ -1,9 +1,13 @@
+// src/data/service.ts
 export type Service = {
   id: string;
   title: string;
   subtitle?: string;
   bullets: string[];
   noteCta: string;
+  /** Prezzo in centesimi per mostrare prezzo + “Aggiungi al carrello”.
+   *  Se assente, nella lista compare solo “Approfondisci”. */
+  priceCents?: number;
 };
 
 export const SERVICES: Service[] = [
@@ -20,7 +24,10 @@ export const SERVICES: Service[] = [
       "• Società di persone a soli € 150 mensili inclusa consulenza, tenuta scritture contabili, adempimenti societari e dichiarativi fiscali;",
       "• Società di capitali a soli € 250 mensili inclusa consulenza, tenuta scritture contabili e libri sociali, adempimenti societari e dichiarativi fiscali;",
     ],
-    noteCta: "PER ULTERIORI INFO CLICCA QUI…. (inserire nominativo, telefono, mail + spazio per la descrizione)."
+    noteCta:
+      "PER ULTERIORI INFO CLICCA QUI…. (inserire nominativo, telefono, mail + spazio per la descrizione).",
+    // prezzo base (forfettario 25 €/mese)
+    priceCents: 2500,
   },
   {
     id: "business-plan",
@@ -31,7 +38,10 @@ export const SERVICES: Service[] = [
       "Business plan triennale per investimenti e/o finanziamenti oltre i € 100.000 inclusa relazione del commercialista a soli € 500 oltre IVA;",
       "Business plan quinquennale per investimenti e/o finanziamenti oltre i € 500.000 inclusa relazione del commercialista a soli € 800 oltre IVA;",
     ],
-    noteCta: "PER ULTERIORI INFO CLICCA QUI…. (inserire nominativo, telefono, mail + spazio per la descrizione)."
+    noteCta:
+      "PER ULTERIORI INFO CLICCA QUI…. (inserire nominativo, telefono, mail + spazio per la descrizione).",
+    // prezzo di partenza
+    priceCents: 25000,
   },
   {
     id: "analisi-bilanci",
@@ -41,7 +51,10 @@ export const SERVICES: Service[] = [
       "Analisi di bilanci con calcolo degli indici di natura finanziaria ed economica completa di relazione del commercialista a soli € 250 oltre IVA;",
       "Analisi di bilanci con calcolo degli indici di natura finanziaria ed economica, flussi di cassa, rendiconto finanziario e calcolo del rating di affidabilità bancaria completa di relazione del commercialista a soli € 400 oltre IVA;",
     ],
-    noteCta: "PER ULTERIORI INFO CLICCA QUI…. (inserire nominativo, telefono, mail + spazio per la descrizione)."
+    noteCta:
+      "PER ULTERIORI INFO CLICCA QUI…. (inserire nominativo, telefono, mail + spazio per la descrizione).",
+    // prezzo di partenza
+    priceCents: 25000,
   },
   {
     id: "cessione-quote-societarie",
@@ -51,8 +64,10 @@ export const SERVICES: Service[] = [
       "Un nostro commercialista abilitato andrà a redigere l’atto di cessione delle quote ed una volta approvato e sottoscritto digitalmente dalle parti andrà registrato all’agenzia delle entrate e depositato alla competente camera di commercio.",
       "Le nostre competenze (esclusi i costi di registrazione e deposito CCIAA), rispetto il più oneroso onorario notarile, ammontano soltanto a € 300."
     ],
-    noteCta: "PER ULTERIORI INFO CLICCA QUI…. (inserire nominativo, telefono, mail + spazio per la descrizione)."
+    noteCta:
+      "PER ULTERIORI INFO CLICCA QUI…. (inserire nominativo, telefono, mail + spazio per la descrizione).",
+    priceCents: 30000,
   },
 ];
 
-export const getServiceById = (id: string) => SERVICES.find(s => s.id === id);
+export const getServiceById = (id: string) => SERVICES.find((s) => s.id === id);
