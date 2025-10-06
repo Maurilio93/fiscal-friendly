@@ -55,8 +55,8 @@ const Index = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-            {/* Scorri ai servizi */}
-            <a href="#servizi">
+            {/* Scorri ai servizi (lasciato com'è: ancora àncora interna) */}
+            <a href="#servizi" aria-label="Vai alla sezione servizi">
               <Button
                 size="lg"
                 variant="outline"
@@ -67,8 +67,11 @@ const Index = () => {
               </Button>
             </a>
 
-            {/* Chiamata diretta */}
-            <a href="tel:+393318341262">
+            {/* Chiamata diretta → TEL corretto */}
+            <a
+              href="tel:+393318341262"
+              aria-label="Chiama il numero +39 331 834 1262"
+            >
               <Button
                 size="lg"
                 variant="outline"
@@ -82,27 +85,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Teaser Commercialisti: card gialla che porta alla pagina dedicata */}
-      <section className="py-10 px-4" aria-label="Pacchetto Commercialisti">
-        <div className="max-w-7xl mx-auto">
-          <Link to="/commercialisti">
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow border-2 border-yellow-100 bg-yellow-50 text-center">
-              <CardHeader>
-                <CardTitle className="text-xl md:text-2xl font-bold text-amber-800">
-                  Pacchetto speciale per commercialisti
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-amber-900">
-                <p className="text-base md:text-lg">
-                  Trasferite a noi gli adempimenti per i vostri clienti che vi
-                  fanno perdere tempo prezioso a prezzi davvero irrisori.{" "}
-                  <span className="underline">Approfondisci</span>
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
-      </section>
+      {/* Teaser Commercialisti */}
 
       {/* Benefits */}
       <section className="py-16 bg-muted" aria-label="Vantaggi principali">
@@ -186,7 +169,11 @@ const Index = () => {
                   <span>Area utenti dedicata</span>
                 </div>
                 <div className="pt-4">
-                  <Link to="/area-utenti" className="block">
+                  <Link
+                    to="/area-utenti"
+                    className="block"
+                    aria-label="Vai all'area utenti per abbonarti"
+                  >
                     <Button className="w-full bg-gradient-hero hover:opacity-9">
                       Abbonati ora
                     </Button>
@@ -228,7 +215,11 @@ const Index = () => {
                   <span>Supporto base</span>
                 </div>
                 <div className="pt-4">
-                  <a href="#contatti" className="block">
+                  <a
+                    href="#contatti"
+                    className="block"
+                    aria-label="Vai alla sezione contatti per richiedere il servizio"
+                  >
                     <Button variant="outline" className="w-full">
                       Richiedi servizio
                     </Button>
@@ -267,9 +258,10 @@ const Index = () => {
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-2 text-center">
                 <p>• Dichiarazioni fiscali</p>
-                <p>• Cartelle esattoriali</p>
-                <p>• Istanze di sgravio</p>
-                <p>• Comunicazioni Agenzia Entrate</p>
+                <p>• Avvisi bonari Agenzia Entrate</p>
+                <p>• Cartelle Agenzia Entrate Riscossione</p>
+                <p>• Istanze di sgravio Agenzia Entrate</p>
+                <p>• Ricorsi Commissione Tributaria</p>
               </CardContent>
             </Card>
 
@@ -287,7 +279,7 @@ const Index = () => {
                 <p>• Deposito bilanci</p>
                 <p>• Adempimenti societari</p>
                 <p>• Visure e certificati</p>
-                <p>• Lettere di contestazione</p>
+                {/* RIMOSSA la voce "Lettere di contestazione" */}
               </CardContent>
             </Card>
 
@@ -300,35 +292,62 @@ const Index = () => {
                 <CardTitle className="text-lg">Su contratti</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-2 text-center">
-                <p>• Contratti di locazione</p>
-                <p>• Comodati d’uso gratuito</p>
-                <p>• Scritture private</p>
+                <p>• Registrazione contratto di locazione</p>
+                <p>• Registrazione comodati d’uso gratuiti</p>
+                <p>• Registrazioni scritture private</p>
+                <p>• Stipula e registrazione cessione quote SRL</p>
               </CardContent>
             </Card>
 
             {/* Consulenze */}
             <Card className="gradient-card hover:shadow-elegant transition-smooth">
               <CardHeader className="text-center pb-4">
-                <div className="bg-secondary p-3 rounded-full w-fit mx-auto mb-4">
-                  <Users className="h-6 w-6 text-secondary-foreground" />
+                <div className="bg-gradient-to-r from-[#FF6B6B] to-[#FFD93D] p-3 rounded-full w-fit mx-auto mb-4">
+                  <MessageCircle className="h-6 w-6 text-white" />
                 </div>
                 <CardTitle className="text-lg">Consulenze</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-2 text-center">
+                <p>• Telefoniche</p>
                 <p>• Su chat</p>
-                <p>• Per appuntamento</p>
+                <p>• Per e-mail</p>
+                <p>• In videoconferenza</p>
               </CardContent>
             </Card>
           </div>
 
           <div className="text-center mt-12">
-            <Link to="/servizi">
+            <Link to="/servizi" aria-label="Vai alla pagina Servizi">
               <Button size="lg" className="bg-gradient-hero hover:opacity-90">
                 Vedi tutti i servizi
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
           </div>
+        </div>
+      </section>
+
+      <section className="py-10 px-4" aria-label="Pacchetto Commercialisti">
+        <div className="max-w-7xl mx-auto">
+          <Link
+            to="/commercialisti"
+            aria-label="Vai alla pagina Commercialisti"
+          >
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow border-2 border-yellow-100 bg-yellow-50 text-center">
+              <CardHeader>
+                <CardTitle className="text-xl md:text-2xl font-bold text-amber-800">
+                  Pacchetto speciale per commercialisti
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-amber-900">
+                <p className="text-base md:text-lg">
+                  Trasferite a noi gli adempimenti per i vostri clienti che vi
+                  fanno perdere tempo prezioso a prezzi davvero irrisori.{" "}
+                  <span className="underline">Approfondisci</span>
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       </section>
 
@@ -352,19 +371,16 @@ const Index = () => {
               </span>
             </p>
 
-            {/* CTA spostata qui dal Hero */}
-            <a
-              href="#contatti"
-              className="text-lg font-semibold px-6 py-3 rounded-md mr-3"
-              style={{ backgroundColor: "#0D3B66", color: "#fff" }}
-            >
+            {/* Testo informativo (non cliccabile) */}
+            <span className="text-lg font-semibold mr-3 text-[#0D3B66]">
               Richiedi subito info per le tue esigenze
-            </a>
+            </span>
 
-            {/* Icona telefono separata */}
+            {/* Icona telefono (collegata) */}
             <a
               href="tel:+393318341262"
-              className="inline-flex items-center justify-center rounded-full p-4 bg-[#0D3B66] hover:opacity-90 transition-smooth"
+              aria-label="Chiama +39 331 834 1262"
+              className="inline-flex items-center justify-center rounded-full p-4 bg-[#FF6B6B] hover:opacity-90 transition-smooth"
             >
               <Phone className="h-4 w-4 text-white" />
             </a>
@@ -393,6 +409,7 @@ const Index = () => {
                 </div>
                 <a
                   href="tel:+393318341262"
+                  aria-label="Chiama +39 331 834 1262"
                   className="inline-flex items-center justify-center rounded-lg px-4 py-2.5 text-white bg-[#FF6B6B] hover:opacity-90 transition-smooth"
                 >
                   Chiama ora
@@ -421,14 +438,15 @@ const Index = () => {
                 </div>
                 <a
                   href="mailto:info@miniconsulenze.it"
-                  className="inline-flex items-center justify-center rounded-lg px-4 py-2.5 bg-[#FF6B6B] text-white hover:opacity-90 transition-smooth"
+                  aria-label="Scrivi a info@miniconsulenze.it"
+                  className="inline-flex items-center justify-center rounded-lg px-6 py-3 bg-[#FF6B6B] text-white hover:opacity-90 transition-smooth"
                 >
                   Scrivi Email
                 </a>
               </CardContent>
             </Card>
 
-            {/* Chat */}
+            {/* Chat → puntiamo all'area utenti dove gestisci la chat */}
             <Card className="h-full rounded-2xl border shadow-elegant hover:shadow-glow transition-smooth">
               <CardHeader className="pb-3">
                 <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm text-white bg-gradient-hero hover:opacity-90 transition-smooth">
@@ -448,7 +466,8 @@ const Index = () => {
                   Assistenza in tempo reale per abbonati
                 </div>
                 <Link
-                  to="/chat"
+                  to="/area-utenti#chat"
+                  aria-label="Apri la chat nell'area utenti"
                   className="inline-flex items-center justify-center rounded-lg px-4 py-2.5 bg-[#FF6B6B] text-white hover:opacity-90 transition-smooth"
                 >
                   Apri Chat
@@ -477,6 +496,7 @@ const Index = () => {
                 </div>
                 <Link
                   to="/prenota"
+                  aria-label="Prenota una visita in ufficio"
                   className="inline-flex items-center justify-center rounded-lg px-4 py-2.5 bg-[#FF6B6B] text-white hover:opacity-90 transition-smooth"
                 >
                   Prenota Visita
