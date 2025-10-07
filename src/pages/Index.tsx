@@ -24,6 +24,23 @@ import {
   Mail,
 } from "lucide-react";
 import SignupForm from "@/components/SignupForm";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
+// eslint-disable-next-line react-hooks/rules-of-hooks
+const location = useLocation();
+// eslint-disable-next-line react-hooks/rules-of-hooks
+useEffect(() => {
+  if (location.hash) {
+    // attende il render e poi scrolla alla sezione
+    setTimeout(() => {
+      document.querySelector(location.hash)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 0);
+  }
+}, [location]);
 
 const Index = () => {
   return (
@@ -506,7 +523,7 @@ const Index = () => {
           </div>
 
           {/* (opzionale) form iscrizione */}
-          <div className="max-w-4xl mx-auto text-center mt-12">
+          <div className="max-w-4xl mx-auto text-center mt-12" id="registrati">
             <SignupForm />
           </div>
         </div>

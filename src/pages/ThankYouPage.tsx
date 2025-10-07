@@ -47,7 +47,7 @@ export default function ThankYouPage() {
 
         if (st === "paid") {
           // Svuota carrello se possibile, ma NON blocchiamo l'UI se fallisce
-          const out = await consumeOrderIfPaid(orderCode);
+          const out = await consumeOrderIfPaid();
           if (!on) return;
 
           if (out === "pending") setState("pending");

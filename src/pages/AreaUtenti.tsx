@@ -125,8 +125,8 @@ const AreaUtenti = () => {
               <Link to="/login">
                 <Button size="lg" className="bg-gradient-hero hover:opacity-90">Vai al login</Button>
               </Link>
-              <Link to="/register">
-                <Button size="lg" variant="outline" className="bg-card">Registrati</Button>
+              <Link to="/#registrati">
+                <Button size="lg" variant="outline" className="bg-gradient-hero hover:opacity-90">Registrati</Button>
               </Link>
             </div>
           </div>
