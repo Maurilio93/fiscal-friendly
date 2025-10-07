@@ -46,9 +46,12 @@ export default function ThankYouPage() {
         const st = String(data.status || data.state || "").toLowerCase();
 
         if (st === "paid") {
-          const out = await consumeOrderIfPaid(); // svuota carrello solo se paid
+          // Svuota carrello se possibile, ma NON blocchiamo l'UI se fallisce
+          const out = await consumeOrderIfPaid(orderCode);
           if (!on) return;
-          setState(out === "paid" ? "paid" : out === "pending" ? "pending" : "error");
+
+          if (out === "pending") setState("pending");
+          else setState("paid"); // out === "paid" o "error" => lo stato è comunque PAID lato server
         } else if (st === "pending" || st === "created") {
           if (on) setState("pending");
         } else {
