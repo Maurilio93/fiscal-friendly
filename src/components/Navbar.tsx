@@ -30,17 +30,27 @@ const Navbar = () => {
       await apiLogout();
     } finally {
       setUser(null);
-      // redirect “pulito”
-      window.location.href = "/";
+      window.location.href = "/"; // redirect “pulito”
     }
   };
+
+  const AreaUtentiBtn = ({ className = "", full = false }: { className?: string; full?: boolean }) => (
+    <Link to="/area-utenti" aria-label="Vai alla tua area utenti">
+      <Button
+        variant="default"
+        className={`${className} ${full ? "w-full" : ""} bg-gradient-hero hover:opacity-90 transition-smooth`}
+      >
+        Area Utenti
+      </Button>
+    </Link>
+  );
 
   return (
     <nav className="bg-card shadow-elegant sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2" aria-label="Vai alla Home">
             <div className="bg-gradient-hero p-2 rounded-lg">
               <Phone className="h-6 w-6 text-primary-foreground" />
             </div>
@@ -79,20 +89,16 @@ const Navbar = () => {
               </Button>
             </Link>
 
-            {!user ? (
-              <Link to="/area-utenti">
-                <Button
-                  variant="default"
-                  className="bg-[#FF6B6B] hover:bg-[#e85a5a] transition-smooth"
-                >
-                  Area Utenti
-                </Button>
-              </Link>
-            ) : (
+            {/* Mostra SEMPRE Area Utenti */}
+            <AreaUtentiBtn />
+
+            {/* Se loggato mostra anche Logout */}
+            {user && (
               <Button
                 onClick={doLogout}
                 variant="default"
                 className="bg-[#FF6B6B] hover:bg-[#e85a5a] transition-smooth"
+                aria-label="Esci"
               >
                 Logout
               </Button>
@@ -104,7 +110,9 @@ const Navbar = () => {
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-muted-foreground hover:text-primary focus:outline-none focus:text-primary transition-smooth"
-              aria-label="Apri menu"
+              aria-label={isOpen ? "Chiudi menu" : "Apri menu"}
+              aria-expanded={isOpen}
+              aria-controls="mobile-menu"
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -113,7 +121,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden">
+          <div id="mobile-menu" className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-muted rounded-lg mt-2">
               {navigation.map((item) => (
                 <Link
@@ -131,7 +139,7 @@ const Navbar = () => {
               ))}
 
               {/* Carrello (Mobile) */}
-              <Link to="/cart" onClick={() => setIsOpen(false)} className="block">
+              <Link to="/cart" onClick={() => setIsOpen(false)} className="block" aria-label="Vai al carrello">
                 <Button variant="outline" className="w-full mt-2 flex items-center justify-center gap-2">
                   <ShoppingCart className="h-5 w-5" />
                   <span>Carrello</span>
@@ -143,21 +151,20 @@ const Navbar = () => {
                 </Button>
               </Link>
 
-              {/* CTA Auth (Mobile) */}
-              {!user ? (
-                <Link to="/area-utenti" onClick={() => setIsOpen(false)}>
-                  <Button
-                    variant="default"
-                    className="w-full mt-2 bg-gradient-hero hover:opacity-90"
-                  >
-                    Area Utenti
-                  </Button>
-                </Link>
-              ) : (
+              {/* Area Utenti (Mobile) — sempre visibile */}
+              <div onClick={() => setIsOpen(false)}>
+                <AreaUtentiBtn full className="mt-2" />
+              </div>
+
+              {/* Logout (Mobile) — solo se loggato */}
+              {user && (
                 <Button
-                  onClick={() => { setIsOpen(false); doLogout(); }}
+                  onClick={() => {
+                    setIsOpen(false);
+                    doLogout();
+                  }}
                   variant="default"
-                  className="w-full mt-2 bg-gradient-hero hover:opacity-90"
+                  className="w-full mt-2 bg-[#FF6B6B] hover:bg-[#e85a5a] transition-smooth"
                 >
                   Logout
                 </Button>
