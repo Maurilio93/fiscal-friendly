@@ -14,7 +14,7 @@ type LocalCartItem = {
 };
 
 export default function CartPage() {
-  const { items, setQty, remove, clear, totalClientCents } = useCart();
+  const { items, setQty, remove, clear, totalClientCents, /* NEW: */ /* toVivaItems, */ rememberOrder } = useCart();
   const cartItems = items as LocalCartItem[];
 
   const { user } = useAuth();
@@ -43,7 +43,7 @@ export default function CartPage() {
       return;
     }
 
-    // Prepara payload conforme all'API
+    // Prepara payload conforme all'API (manteniamo il tuo fallback price->cents)
     const vivaItems: VivaOrderItem[] = cartItems.map((it) => ({
       id: it.id,
       qty: it.qty,
@@ -61,11 +61,12 @@ export default function CartPage() {
         items: vivaItems,
       });
 
-      try {
-        localStorage.setItem("lastOrderCode", String(orderCode ?? ""));
-      } catch {
-        /* no-op */
+      if (!paymentUrl || !orderCode) {
+        throw new Error("Risposta ordine non valida");
       }
+
+      // 🔹 salva orderCode + snapshot carrello (NUOVO)
+      rememberOrder(String(orderCode));
 
       // Redirect a VivaWallet
       window.location.href = paymentUrl;
