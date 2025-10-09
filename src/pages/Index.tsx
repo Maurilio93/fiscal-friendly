@@ -15,7 +15,6 @@ import {
   Shield,
   Phone,
   ArrowRight,
-  Users,
   FileText,
   Calculator,
   Building,
@@ -26,23 +25,24 @@ import {
 import SignupForm from "@/components/SignupForm";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-
-// eslint-disable-next-line react-hooks/rules-of-hooks
-const location = useLocation();
-// eslint-disable-next-line react-hooks/rules-of-hooks
-useEffect(() => {
-  if (location.hash) {
-    // attende il render e poi scrolla alla sezione
-    setTimeout(() => {
-      document.querySelector(location.hash)?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 0);
-  }
-}, [location]);
+import ChatCard from "./ChatCard";
 
 const Index = () => {
+  // ✅ I hook devono stare qui, dentro al componente
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      // attende il render e poi scrolla alla sezione
+      setTimeout(() => {
+        document.querySelector(location.hash)?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 0);
+    }
+  }, [location]);
+
   return (
     <div className="min-h-screen">
       {/* Hero */}
@@ -72,7 +72,7 @@ const Index = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-            {/* Scorri ai servizi (lasciato com'è: ancora àncora interna) */}
+            {/* Scorri ai servizi */}
             <a href="#servizi" aria-label="Vai alla sezione servizi">
               <Button
                 size="lg"
@@ -84,7 +84,7 @@ const Index = () => {
               </Button>
             </a>
 
-            {/* Chiamata diretta → TEL corretto */}
+            {/* Chiamata diretta */}
             <a
               href="tel:+393318341262"
               aria-label="Chiama il numero +39 331 834 1262"
@@ -101,8 +101,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {/* Teaser Commercialisti */}
 
       {/* Benefits */}
       <section className="py-16 bg-muted" aria-label="Vantaggi principali">
@@ -296,7 +294,6 @@ const Index = () => {
                 <p>• Deposito bilanci</p>
                 <p>• Adempimenti societari</p>
                 <p>• Visure e certificati</p>
-                {/* RIMOSSA la voce "Lettere di contestazione" */}
               </CardContent>
             </Card>
 
@@ -456,14 +453,14 @@ const Index = () => {
                 <a
                   href="mailto:info@miniconsulenze.it"
                   aria-label="Scrivi a info@miniconsulenze.it"
-                  className="inline-flex items-center justify-center rounded-lg px-6 py-3 bg-[#FF6B6B] text-white hover:opacity-90 transition-smooth"
+                  className="inline-flex items-center justify-center rounded-lg px-4 py-2.5 bg-[#FF6B6B] text-white hover:opacity-90 transition-smooth"
                 >
                   Scrivi Email
                 </a>
               </CardContent>
             </Card>
 
-            {/* Chat → puntiamo all'area utenti dove gestisci la chat */}
+            {/* Chat */}
             <Card className="h-full rounded-2xl border shadow-elegant hover:shadow-glow transition-smooth">
               <CardHeader className="pb-3">
                 <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm text-white bg-gradient-hero hover:opacity-90 transition-smooth">
@@ -475,6 +472,7 @@ const Index = () => {
                   Supporto immediato
                 </CardDescription>
               </CardHeader>
+
               <CardContent className="space-y-4">
                 <div className="text-2xl font-semibold tracking-tight">
                   In linea
@@ -482,16 +480,23 @@ const Index = () => {
                 <div className="text-sm text-muted-foreground">
                   Assistenza in tempo reale per abbonati
                 </div>
-                <Link
-                  to="/area-utenti#chat"
-                  aria-label="Apri la chat nell'area utenti"
+
+                {/* 🔹 Bottone modificato */}
+                <button
+                  onClick={() =>
+                    window.open(
+                      "https://wa.me/393471234567?text=" +
+                        encodeURIComponent("Ciao! Ho bisogno di assistenza."),
+                      "_blank"
+                    )
+                  }
+                  aria-label="Apri la chat WhatsApp"
                   className="inline-flex items-center justify-center rounded-lg px-4 py-2.5 bg-[#FF6B6B] text-white hover:opacity-90 transition-smooth"
                 >
                   Apri Chat
-                </Link>
+                </button>
               </CardContent>
             </Card>
-
             {/* Ufficio */}
             <Card className="h-full rounded-2xl border shadow-elegant hover:shadow-glow transition-smooth">
               <CardHeader className="pb-3">
@@ -504,6 +509,7 @@ const Index = () => {
                   Su appuntamento
                 </CardDescription>
               </CardHeader>
+
               <CardContent className="space-y-4">
                 <div className="text-2xl font-semibold tracking-tight">
                   Palermo Centro
@@ -511,18 +517,28 @@ const Index = () => {
                 <div className="text-sm text-muted-foreground leading-relaxed">
                   Via Principe di Villafranca, 43 Palermo
                 </div>
-                <Link
-                  to="/prenota"
-                  aria-label="Prenota una visita in ufficio"
+
+                {/* 🔹 Bottone WhatsApp */}
+                <button
+                  onClick={() =>
+                    window.open(
+                      "https://wa.me/393471234567?text=" +
+                        encodeURIComponent(
+                          "Ciao! Vorrei prenotare una visita presso l'ufficio di Palermo."
+                        ),
+                      "_blank"
+                    )
+                  }
+                  aria-label="Prenota una visita in ufficio via WhatsApp"
                   className="inline-flex items-center justify-center rounded-lg px-4 py-2.5 bg-[#FF6B6B] text-white hover:opacity-90 transition-smooth"
                 >
                   Prenota Visita
-                </Link>
+                </button>
               </CardContent>
             </Card>
           </div>
 
-          {/* (opzionale) form iscrizione */}
+          {/* form iscrizione */}
           <div className="max-w-4xl mx-auto text-center mt-12" id="registrati">
             <SignupForm />
           </div>
