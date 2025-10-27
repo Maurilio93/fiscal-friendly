@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,17 +23,24 @@ import {
   Mail,
 } from "lucide-react";
 import SignupForm from "@/components/SignupForm";
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import ChatCard from "./ChatCard";
+import { useEffect, useState } from "react";
 
 const Index = () => {
-  // ✅ I hook devono stare qui, dentro al componente
+  // ✅ Hook dentro al componente
   const location = useLocation();
+
+  // 🔽 Modal per visualizzare le locandine
+  const [casartModalOpen, setCasartModalOpen] = useState(false);
+  const [casartIdx, setCasartIdx] = useState(0);
+
+  // Usa questi path così come sono (con %20) oppure rinomina i file in public/banner/ per semplificare
+  const posters = [
+    { src: "/banner/WhatsApp%20Image%202025-10-27%20at%2012.23.18.jpeg", alt: "Locandina Finanziamenti" },
+    { src: "/banner/WhatsApp%20Image%202025-10-27%20at%2012.26.05.jpeg", alt: "Locandina Servizi" },
+  ];
 
   useEffect(() => {
     if (location.hash) {
-      // attende il render e poi scrolla alla sezione
       setTimeout(() => {
         document.querySelector(location.hash)?.scrollIntoView({
           behavior: "smooth",
@@ -42,6 +49,13 @@ const Index = () => {
       }, 0);
     }
   }, [location]);
+
+  // ESC per chiudere il modal
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setCasartModalOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -341,6 +355,7 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Pacchetto Commercialisti */}
       <section className="py-10 px-4" aria-label="Pacchetto Commercialisti">
         <div className="max-w-7xl mx-auto">
           <Link
@@ -364,6 +379,93 @@ const Index = () => {
           </Link>
         </div>
       </section>
+
+      {/* Banner Casartigiani: FINANZIAMENTI, CONTRIBUTI E SERVIZI */}
+      <section className="py-10 px-4" aria-label="Casartigiani Palermo">
+        <div className="max-w-7xl mx-auto">
+          <button
+            onClick={() => {
+              setCasartIdx(0);
+              setCasartModalOpen(true);
+            }}
+            className="group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl border bg-gradient-to-r from-rose-50 to-white p-5 shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/60"
+            aria-label="Apri locandine Casartigiani Palermo"
+          >
+            {/* Logo */}
+            <img
+              src="/logo/casartigiani-logo.png"
+              alt="Casartigiani Palermo"
+              className="h-12 w-auto md:h-14"
+              loading="lazy"
+              decoding="async"
+            />
+            {/* Titolo */}
+            <h3 className="text-center text-lg md:text-xl font-extrabold tracking-tight text-rose-700 leading-snug">
+              FINANZIAMENTI, CONTRIBUTI E SERVIZI PER LE IMPRESE ARTIGIANE
+            </h3>
+
+            <span className="ml-auto hidden rounded-full bg-rose-700 px-3 py-1 text-xs font-semibold text-white md:block">
+              Clicca per visualizzare
+            </span>
+          </button>
+        </div>
+      </section>
+
+      {/* Modal semplice con viewer (freccia ← / → e ESC) */}
+      {casartModalOpen && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center"
+          role="dialog"
+          aria-modal="true"
+        >
+          {/* Chiudi cliccando fuori */}
+          <button
+            className="absolute inset-0 h-full w-full"
+            onClick={() => setCasartModalOpen(false)}
+            aria-label="Chiudi"
+          />
+
+          {/* Immagine a piena finestra */}
+          <img
+            src={posters[casartIdx].src}
+            alt={posters[casartIdx].alt}
+            className="max-h-[95vh] max-w-[95vw] object-contain rounded-lg shadow-lg"
+            loading="eager"
+            decoding="async"
+          />
+
+          {/* Frecce navigazione */}
+          {posters.length > 1 && (
+            <>
+              <button
+                onClick={() =>
+                  setCasartIdx((i) => (i - 1 + posters.length) % posters.length)
+                }
+                className="absolute left-6 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white px-3 py-2 text-lg shadow"
+                aria-label="Precedente"
+              >
+                ‹
+              </button>
+              <button
+                onClick={() => setCasartIdx((i) => (i + 1) % posters.length)}
+                className="absolute right-6 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white px-3 py-2 text-lg shadow"
+                aria-label="Successiva"
+              >
+                ›
+              </button>
+            </>
+          )}
+
+          {/* Bottone chiudi */}
+          <button
+            onClick={() => setCasartModalOpen(false)}
+            className="absolute top-5 right-5 rounded-full bg-white/80 hover:bg-white px-3 py-1 text-sm shadow"
+            aria-label="Chiudi"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Contatti in fondo */}
       <section
@@ -481,12 +583,11 @@ const Index = () => {
                   Assistenza in tempo reale per abbonati
                 </div>
 
-                {/* 🔹 Bottone modificato */}
                 <button
                   onClick={() =>
                     window.open(
                       "https://wa.me/393471234567?text=" +
-                        encodeURIComponent("Ciao! Ho bisogno di assistenza."),
+                      encodeURIComponent("Ciao! Ho bisogno di assistenza."),
                       "_blank"
                     )
                   }
@@ -497,6 +598,7 @@ const Index = () => {
                 </button>
               </CardContent>
             </Card>
+
             {/* Ufficio */}
             <Card className="h-full rounded-2xl border shadow-elegant hover:shadow-glow transition-smooth">
               <CardHeader className="pb-3">
@@ -518,14 +620,13 @@ const Index = () => {
                   Via Principe di Villafranca, 43 Palermo
                 </div>
 
-                {/* 🔹 Bottone WhatsApp */}
                 <button
                   onClick={() =>
                     window.open(
                       "https://wa.me/393471234567?text=" +
-                        encodeURIComponent(
-                          "Ciao! Vorrei prenotare una visita presso l'ufficio di Palermo."
-                        ),
+                      encodeURIComponent(
+                        "Ciao! Vorrei prenotare una visita presso l'ufficio di Palermo."
+                      ),
                       "_blank"
                     )
                   }
