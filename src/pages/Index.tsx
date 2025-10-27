@@ -35,8 +35,8 @@ const Index = () => {
 
   // Usa questi path così come sono (con %20) oppure rinomina i file in public/banner/ per semplificare
   const posters = [
-    { src: "/banner/WhatsApp%20Image%202025-10-27%20at%2012.23.18.jpeg", alt: "Locandina Finanziamenti" },
-    { src: "/banner/WhatsApp%20Image%202025-10-27%20at%2012.26.05.jpeg", alt: "Locandina Servizi" },
+    { src: "/banner/finanziamenti.jpg", alt: "Locandina Finanziamenti" },
+    { src: "/banner/servizi.jpg", alt: "Locandina Servizi" },
   ];
 
   useEffect(() => {
