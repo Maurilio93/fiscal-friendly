@@ -24,7 +24,7 @@ type Overview = {
   subscriptions: Array<{ id: number | string; plan?: string; status?: string; renew_at?: string | null }>;
 };
 
-// /api/me/orders (nuovo)
+// /api/me/orders
 type MeOrderItem = {
   sku?: string;
   title?: string;
@@ -35,7 +35,7 @@ type MeOrder = {
   orderCode: string;
   status: "created" | "pending" | "paid" | "failed" | "expired" | "canceled" | "mismatch" | string;
   total_cents?: number | null;
-  amountCents?: number | null; // alias presente nel backend
+  amountCents?: number | null;
   created_at?: string | null;
   paidAt?: string | null;
   transactionId?: string | null;
@@ -64,7 +64,7 @@ function statusBadgeClass(status: string) {
 /* --------------------------- Componente page -------------------------- */
 
 const AreaUtenti = () => {
-  const { user } = useAuth();
+  const { user, status } = useAuth(); // status sarà sempre "user" qui, grazie a ProtectedRoute
 
   const [loadingOverview, setLoadingOverview] = useState(true);
   const [overview, setOverview] = useState<Overview | null>(null);
@@ -73,13 +73,13 @@ const AreaUtenti = () => {
   const [orders, setOrders] = useState<MeOrder[]>([]);
   const [ordersError, setOrdersError] = useState<string | null>(null);
 
-  // Carica tickets/subscriptions (overview) e ordini reali
   useEffect(() => {
-    if (!user) return;
+    // Per sicurezza, avvia solo se siamo autenticati
+    if (status !== "user") return;
 
     let on = true;
 
-    // 1) Overview (tickets, subscriptions; orders possono essere vuoti o schema diverso)
+    // 1) Overview (tickets/subscriptions)
     (async () => {
       try {
         const res = await getOverview();
@@ -89,7 +89,7 @@ const AreaUtenti = () => {
       }
     })();
 
-    // 2) Ordini reali: /api/me/orders (cookie HttpOnly necessario)
+    // 2) Ordini reali
     (async () => {
       setOrdersError(null);
       try {
@@ -98,59 +98,22 @@ const AreaUtenti = () => {
         const data = await r.json();
         if (on) setOrders((data?.orders as MeOrder[]) || []);
       } catch (e: unknown) {
-        if (on) setOrdersError(
-          typeof e === "object" && e !== null && "message" in e
-            ? String((e as { message?: unknown }).message)
-            : "Errore di rete"
-        );
+        if (on)
+          setOrdersError(
+            typeof e === "object" && e !== null && "message" in e
+              ? String((e as { message?: unknown }).message)
+              : "Errore di rete"
+          );
       } finally {
         if (on) setLoadingOrders(false);
       }
     })();
 
-    return () => { on = false; };
-  }, [user]);
+    return () => {
+      on = false;
+    };
+  }, [status]);
 
-  // Non autenticato (AuthContext ha risposto e user === null)
-  if (user === null) {
-    return (
-      <div className="min-h-screen">
-        <section className="bg-[#0D3B66] text-primary-foreground py-20 px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Area Utenti</h1>
-            <p className="text-xl md:text-2xl text-primary-foreground/90">
-              Devi effettuare l’accesso per continuare
-            </p>
-            <div className="mt-8 flex justify-center gap-3">
-              <Link to="/login">
-                <Button size="lg" className="bg-gradient-hero hover:opacity-90">Vai al login</Button>
-              </Link>
-              <Link to="/#registrati">
-                <Button size="lg" variant="outline" className="bg-gradient-hero hover:opacity-90">Registrati</Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-      </div>
-    );
-  }
-
-  // In attesa che l'AuthContext risponda (undefined)
-  if (!user) {
-    return (
-      <div className="min-h-screen">
-        <section className="bg-[#0D3B66] text-primary-foreground py-20 px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Area Utenti</h1>
-            <p className="text-xl md:text-2xl text-primary-foreground/90">Caricamento…</p>
-          </div>
-        </section>
-      </div>
-    );
-  }
-
-  // derivati
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const hasOrders = useMemo(() => orders && orders.length > 0, [orders]);
 
   return (
@@ -173,7 +136,7 @@ const AreaUtenti = () => {
           <div className="bg-gradient-hero text-primary-foreground p-6 rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold mb-2">Ciao, {user.name}</h2>
+                <h2 className="text-2xl font-bold mb-2">Ciao, {user?.name}</h2>
                 <p className="text-primary-foreground/90">
                   Qui trovi ordini, abbonamenti e richieste.
                 </p>

@@ -94,6 +94,14 @@ export function centsToEUR(cents: number): string {
 }
 
 /* ----------------------------- AUTH ----------------------------- */
+
+// NEW: sempre 200, usato dall'AuthProvider al bootstrap
+export const getStatus = () =>
+  http<{ auth: "guest" | "user"; user: { id: string; name: string; email: string } | null }>(
+    "/api/auth/status"
+  );
+
+// Mantieni getMe, ma chiamalo solo in pagine già protette
 export const getMe = () =>
   http<{ user: { id: string; name: string; email: string } | null }>("/api/auth/me");
 
@@ -110,7 +118,7 @@ export const login = (email: string, password: string) =>
   });
 
 export const logout = () =>
-  http<{ ok: true }>("/api/auth/logout", { method: "POST" }); // il caller può ignorare il valore
+  http<{ ok: true }>("/api/auth/logout", { method: "POST" });
 
 /* ----------------------------- USER ----------------------------- */
 export const getOverview = () =>

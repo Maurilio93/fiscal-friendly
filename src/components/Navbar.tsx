@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, ShoppingCart } from "lucide-react";
 
@@ -10,9 +10,10 @@ import { useCart } from "@/cart/CartContext";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // stato auth + carrello
-  const { user, setUser } = useAuth();
+  const { user, status, setUser, refreshAuth } = useAuth();
   const { totalQty } = useCart();
 
   const navigation = [
@@ -30,7 +31,8 @@ const Navbar = () => {
       await apiLogout();
     } finally {
       setUser(null);
-      window.location.href = "/"; // redirect “pulito”
+      await refreshAuth();        // allinea subito lo stato del provider
+      navigate("/");              // redirect “pulito” senza full reload
     }
   };
 
@@ -92,8 +94,8 @@ const Navbar = () => {
             {/* Mostra SEMPRE Area Utenti */}
             <AreaUtentiBtn />
 
-            {/* Se loggato mostra anche Logout */}
-            {user && (
+            {/* Logout solo se loggato; nascondi mentre status è "loading" per evitare flicker */}
+            {status === "user" && user && (
               <Button
                 onClick={doLogout}
                 variant="default"
@@ -157,11 +159,11 @@ const Navbar = () => {
               </div>
 
               {/* Logout (Mobile) — solo se loggato */}
-              {user && (
+              {status === "user" && user && (
                 <Button
-                  onClick={() => {
+                  onClick={async () => {
                     setIsOpen(false);
-                    doLogout();
+                    await doLogout();
                   }}
                   variant="default"
                   className="w-full mt-2 bg-[#FF6B6B] hover:bg-[#e85a5a] transition-smooth"

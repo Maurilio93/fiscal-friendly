@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import { login, getMe } from "../lib/api";
+import { login } from "../lib/api";
 import {
   Card,
   CardHeader,
@@ -16,28 +16,38 @@ import { Label } from "@/components/ui/label";
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser } = useAuth();
+  const { status, refreshAuth } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Se già loggato, esci subito dalla pagina di login (senza chiamare /api/auth/me)
+  useEffect(() => {
+    if (status === "user") {
+      const next = new URLSearchParams(location.search).get("next") || "/area-utenti";
+      navigate(next, { replace: true });
+    }
+  }, [status, location.search, navigate]);
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
     try {
-      await login(email, password); 
-      const me = await getMe();
-      setUser(me.user ?? null);
-      navigate("/area-utenti");
+      await login(email, password); // setta cookie HttpOnly lato server
+      await refreshAuth();          // aggiorna AuthProvider (status -> "user")
+      const next = new URLSearchParams(location.search).get("next") || "/area-utenti";
+      navigate(next, { replace: true });
     } catch (err: unknown) {
-      setError(
-        err instanceof Error && err.message === "401"
-          ? "Credenziali non valide."
-          : "Errore di accesso."
-      );
+      const msg =
+        err instanceof Error
+          ? (err.message.includes("invalid") || err.message.includes("401")
+              ? "Credenziali non valide."
+              : err.message)
+          : "Errore di accesso.";
+      setError(msg);
     } finally {
       setSubmitting(false);
     }
@@ -58,6 +68,7 @@ export default function Login() {
               ✅ Registrazione completata! Ora effettua il login.
             </p>
           )}
+
           <form className="space-y-4" onSubmit={onSubmit}>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -65,8 +76,10 @@ export default function Login() {
                 id="email"
                 type="email"
                 value={email}
+                autoComplete="email"
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={submitting}
               />
             </div>
             <div className="space-y-2">
@@ -75,11 +88,15 @@ export default function Login() {
                 id="password"
                 type="password"
                 value={password}
+                autoComplete="current-password"
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={submitting}
               />
             </div>
+
             {error && <p className="text-sm text-red-600">{error}</p>}
+
             <Button
               type="submit"
               className="w-full bg-gradient-hero hover:opacity-90"
@@ -87,6 +104,7 @@ export default function Login() {
             >
               {submitting ? "Accesso in corso…" : "Accedi"}
             </Button>
+
             <p className="text-center text-sm text-muted-foreground mt-2">
               Non hai un account?{" "}
               <Link to="/registrazione" className="underline">
