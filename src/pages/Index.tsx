@@ -24,16 +24,43 @@ import {
 } from "lucide-react";
 import SignupForm from "@/components/SignupForm";
 import { useEffect, useState } from "react";
+import BillingModal, { BillingPayload } from "@/components/BillingModal";
+import { startCheckout } from "@/lib/checkout";
 
 const Index = () => {
-  // ✅ Hook dentro al componente
   const location = useLocation();
 
-  // 🔽 Modal per visualizzare le locandine
+  // ---- Modal locandine ----
   const [casartModalOpen, setCasartModalOpen] = useState(false);
   const [casartIdx, setCasartIdx] = useState(0);
 
-  // Usa questi path così come sono (con %20) oppure rinomina i file in public/banner/ per semplificare
+  // ---- Billing modal (pagamento) ----
+  const [billingOpen, setBillingOpen] = useState(false);
+  const [pendingItem, setPendingItem] = useState<{
+    id: string;
+    title: string;
+    unitPriceCents: number;
+  } | null>(null);
+
+  // Abbonamento 100€ + IVA / Servizio occasionale 40€ + IVA
+  const OPEN_BILLING_ABBONAMENTO = () =>
+    openBillingFor({ id: "abbonamento-annuale", title: "Abbonamento annuale", unitPriceCents: 10000 });
+  const OPEN_BILLING_OCCASIONALE = () =>
+    openBillingFor({ id: "servizio-occasionale", title: "Servizio occasionale", unitPriceCents: 4000 });
+
+  function openBillingFor(item: { id: string; title: string; unitPriceCents: number }) {
+    setPendingItem(item);
+    setBillingOpen(true);
+  }
+
+  async function handleBillingSubmit(billing: BillingPayload) {
+    if (!pendingItem) return;
+    // crea ordine + redirect a Viva
+    await startCheckout(pendingItem, billing);
+    // se non redirige per qualche motivo, chiudi il modal per sicurezza
+    setBillingOpen(false);
+  }
+
   const posters = [
     { src: "/banner/finanziamenti.jpg", alt: "Locandina Finanziamenti" },
     { src: "/banner/servizi.jpg", alt: "Locandina Servizi" },
@@ -50,7 +77,6 @@ const Index = () => {
     }
   }, [location]);
 
-  // ESC per chiudere il modal
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setCasartModalOpen(false);
     window.addEventListener("keydown", onKey);
@@ -69,12 +95,9 @@ const Index = () => {
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 md:mb-6 leading-tight">
             Soluzioni rapide e accessibili
-            <span className="block text-[#FFEB3B] mt-2">
-              Ci pensiamo a tutto noi
-            </span>
+            <span className="block text-[#FFEB3B] mt-2">Ci pensiamo a tutto noi</span>
           </h1>
 
-          {/* descrizione su UNA riga su schermi medi+ */}
           <div className="mt-6 flex justify-center px-4">
             <p
               className="text-white/90 whitespace-nowrap leading-snug text-center"
@@ -86,7 +109,6 @@ const Index = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-            {/* Scorri ai servizi */}
             <a href="#servizi" aria-label="Vai alla sezione servizi">
               <Button
                 size="lg"
@@ -98,11 +120,7 @@ const Index = () => {
               </Button>
             </a>
 
-            {/* Chiamata diretta */}
-            <a
-              href="tel:+393318341262"
-              aria-label="Chiama il numero +39 331 834 1262"
-            >
+            <a href="tel:+393318341262" aria-label="Chiama il numero +39 331 834 1262">
               <Button
                 size="lg"
                 variant="outline"
@@ -125,21 +143,15 @@ const Index = () => {
                 <Clock className="h-8 w-8 text-secondary-foreground" />
               </div>
               <h3 className="text-xl font-semibold">Rapidità</h3>
-              <p className="text-muted-foreground">
-                Risposte in tempi record per le tue urgenze
-              </p>
+              <p className="text-muted-foreground">Risposte in tempi record per le tue urgenze</p>
             </div>
 
             <div className="flex flex-col items-center space-y-4">
               <div className="bg-accent p-4 rounded-full">
                 <Euro className="h-8 w-8 text-accent-foreground" />
               </div>
-              <h3 className="text-xl font-semibold">
-                Scegli la soluzione per te
-              </h3>
-              <p className="text-muted-foreground">
-                Tariffe chiare e trasparenti
-              </p>
+              <h3 className="text-xl font-semibold">Scegli la soluzione per te</h3>
+              <p className="text-muted-foreground">Tariffe chiare e trasparenti</p>
             </div>
 
             <div className="flex flex-col items-center space-y-4">
@@ -147,9 +159,7 @@ const Index = () => {
                 <Shield className="h-8 w-8 text-primary-foreground" />
               </div>
               <h3 className="text-xl font-semibold">Zero pensieri</h3>
-              <p className="text-muted-foreground">
-                Alle pratiche pensiamo noi
-              </p>
+              <p className="text-muted-foreground">Alle pratiche pensiamo noi</p>
             </div>
           </div>
         </div>
@@ -159,12 +169,8 @@ const Index = () => {
       <section id="prezzi" className="py-20 px-4" aria-label="Prezzi e piani">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Scegli la soluzione per te
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Tariffe semplici e trasparenti
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Scegli la soluzione per te</h2>
+            <p className="text-xl text-muted-foreground">Tariffe semplici e trasparenti</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -173,13 +179,13 @@ const Index = () => {
               <CardHeader className="text-center pb-8">
                 <CardTitle className="text-2xl">Abbonamento annuale</CardTitle>
                 <div className="text-4xl font-bold text-primary">
-                  € 100{" "}
-                  <span className="text-lg text-muted-foreground">+ IVA</span>
+                  € 100 <span className="text-lg text-muted-foreground">+ IVA</span>
                 </div>
                 <CardDescription className="text-lg">
                   Servizi inclusi nell’abbonamento
                 </CardDescription>
               </CardHeader>
+
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-secondary" />
@@ -187,7 +193,7 @@ const Index = () => {
                 </div>
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-secondary" />
-                  <span>Consulenze Telefoniche illimitate</span>
+                  <span>10 consulenze telefoniche incluse nell'anno</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-secondary" />
@@ -197,18 +203,18 @@ const Index = () => {
                   <CheckCircle className="h-5 w-5 text-secondary" />
                   <span>Area utenti dedicata</span>
                 </div>
+
                 <div className="pt-4">
-                  <Link
-                    to="/area-utenti"
-                    className="block"
-                    aria-label="Vai all'area utenti per abbonarti"
+                  <Button
+                    className="w-full bg-gradient-hero hover:opacity-90"
+                    onClick={OPEN_BILLING_ABBONAMENTO}
+                    aria-label="Inserisci i dati di fatturazione e abbonati"
                   >
-                    <Button className="w-full bg-gradient-hero hover:opacity-9">
-                      Abbonati ora
-                    </Button>
-                  </Link>
+                    Abbonati adesso
+                  </Button>
                 </div>
               </CardContent>
+
               <Badge className="w-fit mx-auto mb-6 bg-secondary text-secondary-foreground flex center">
                 Consigliato
               </Badge>
@@ -219,13 +225,11 @@ const Index = () => {
               <CardHeader className="text-center pb-8">
                 <CardTitle className="text-2xl">Servizi occasionali</CardTitle>
                 <div className="text-4xl font-bold text-primary">
-                  € 40{" "}
-                  <span className="text-lg text-muted-foreground">+ IVA</span>
+                  € 40 <span className="text-lg text-muted-foreground">+ IVA</span>
                 </div>
-                <CardDescription className="text-lg">
-                  per singolo servizio
-                </CardDescription>
+                <CardDescription className="text-lg">per singolo servizio</CardDescription>
               </CardHeader>
+
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-muted-foreground" />
@@ -243,16 +247,15 @@ const Index = () => {
                   <CheckCircle className="h-5 w-5 text-muted-foreground" />
                   <span>Supporto base</span>
                 </div>
+
                 <div className="pt-4">
-                  <a
-                    href="#contatti"
-                    className="block"
-                    aria-label="Vai alla sezione contatti per richiedere il servizio"
+                  <Button
+                    className="w-full bg-gradient-hero hover:opacity-90"
+                    onClick={OPEN_BILLING_OCCASIONALE}
+                    aria-label="Inserisci i dati di fatturazione e richiedi il servizio"
                   >
-                    <Button variant="outline" className="w-full">
-                      Richiedi servizio
-                    </Button>
-                  </a>
+                    Richiedi il servizio adesso
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -261,19 +264,11 @@ const Index = () => {
       </section>
 
       {/* Services */}
-      <section
-        id="servizi"
-        className="py-20 bg-muted px-4"
-        aria-label="Anteprima servizi"
-      >
+      <section id="servizi" className="py-20 bg-muted px-4" aria-label="Anteprima servizi">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              I nostri servizi
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Tutto quello di cui hai bisogno, in un unico posto
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">I nostri servizi</h2>
+            <p className="text-xl text-muted-foreground">inclusi nell'abbonamento annuale</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -358,10 +353,7 @@ const Index = () => {
       {/* Pacchetto Commercialisti */}
       <section className="py-10 px-4" aria-label="Pacchetto Commercialisti">
         <div className="max-w-7xl mx-auto">
-          <Link
-            to="/commercialisti"
-            aria-label="Vai alla pagina Commercialisti"
-          >
+          <Link to="/commercialisti" aria-label="Vai alla pagina Commercialisti">
             <Card className="cursor-pointer hover:shadow-lg transition-shadow border-2 border-yellow-100 bg-yellow-50 text-center">
               <CardHeader>
                 <CardTitle className="text-xl md:text-2xl font-bold text-amber-800">
@@ -380,7 +372,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Banner Casartigiani: FINANZIAMENTI, CONTRIBUTI E SERVIZI */}
+      {/* Banner Casartigiani */}
       <section className="py-10 px-4" aria-label="Casartigiani Palermo">
         <div className="max-w-7xl mx-auto">
           <button
@@ -391,7 +383,6 @@ const Index = () => {
             className="group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl border bg-gradient-to-r from-rose-50 to-white p-5 shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/60"
             aria-label="Apri locandine Casartigiani Palermo"
           >
-            {/* Logo */}
             <img
               src="/logo/casartigiani-logo.png"
               alt="Casartigiani Palermo"
@@ -399,11 +390,9 @@ const Index = () => {
               loading="lazy"
               decoding="async"
             />
-            {/* Titolo */}
             <h3 className="text-center text-lg md:text-xl font-extrabold tracking-tight text-rose-700 leading-snug">
               FINANZIAMENTI, CONTRIBUTI E SERVIZI PER LE IMPRESE ARTIGIANE
             </h3>
-
             <span className="ml-auto hidden rounded-full bg-rose-700 px-3 py-1 text-xs font-semibold text-white md:block">
               Clicca per visualizzare
             </span>
@@ -411,21 +400,18 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Modal semplice con viewer (freccia ← / → e ESC) */}
+      {/* Modal locandine */}
       {casartModalOpen && (
         <div
           className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center"
           role="dialog"
           aria-modal="true"
         >
-          {/* Chiudi cliccando fuori */}
           <button
             className="absolute inset-0 h-full w-full"
             onClick={() => setCasartModalOpen(false)}
             aria-label="Chiudi"
           />
-
-          {/* Immagine a piena finestra */}
           <img
             src={posters[casartIdx].src}
             alt={posters[casartIdx].alt}
@@ -433,14 +419,10 @@ const Index = () => {
             loading="eager"
             decoding="async"
           />
-
-          {/* Frecce navigazione */}
           {posters.length > 1 && (
             <>
               <button
-                onClick={() =>
-                  setCasartIdx((i) => (i - 1 + posters.length) % posters.length)
-                }
+                onClick={() => setCasartIdx((i) => (i - 1 + posters.length) % posters.length)}
                 className="absolute left-6 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white px-3 py-2 text-lg shadow"
                 aria-label="Precedente"
               >
@@ -455,8 +437,6 @@ const Index = () => {
               </button>
             </>
           )}
-
-          {/* Bottone chiudi */}
           <button
             onClick={() => setCasartModalOpen(false)}
             className="absolute top-5 right-5 rounded-full bg-white/80 hover:bg-white px-3 py-1 text-sm shadow"
@@ -467,32 +447,20 @@ const Index = () => {
         </div>
       )}
 
-      {/* Contatti in fondo */}
-      <section
-        id="contatti"
-        className="py-20 px-4 bg-muted/30"
-        aria-label="Contatti e canali di supporto"
-      >
+      {/* Contatti */}
+      <section id="contatti" className="py-20 px-4 bg-muted/30" aria-label="Contatti e canali di supporto">
         <div className="max-w-7xl xl:max-w-[1280px] mx-auto">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Contattaci ora
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Contattaci ora</h2>
             <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed">
-              <span className="font-semibold">Pronto a iniziare?</span> Non
-              perdere altro tempo con procedure complicate: i nostri esperti
-              sono qui per aiutarti a risolvere i tuoi problemi.{" "}
-              <span className="font-semibold">
-                Contattaci con fiducia adesso.
-              </span>
+              <span className="font-semibold">Pronto a iniziare?</span> Non perdere altro tempo con procedure complicate:
+              i nostri esperti sono qui per aiutarti a risolvere i tuoi problemi.{" "}
+              <span className="font-semibold">Contattaci con fiducia adesso.</span>
             </p>
 
-            {/* Testo informativo (non cliccabile) */}
             <span className="text-lg font-semibold mr-3 text-[#0D3B66]">
               Richiedi subito info per le tue esigenze
             </span>
-
-            {/* Icona telefono (collegata) */}
             <a
               href="tel:+393318341262"
               aria-label="Chiama +39 331 834 1262"
@@ -502,7 +470,6 @@ const Index = () => {
             </a>
           </div>
 
-          {/* 4 card contatti */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
             {/* Telefono */}
             <Card className="h-full rounded-2xl border shadow-elegant hover:shadow-glow transition-smooth">
@@ -512,17 +479,11 @@ const Index = () => {
                   Telefono
                 </div>
                 <CardTitle className="sr-only">Telefono</CardTitle>
-                <CardDescription className="pt-2">
-                  Chiamata diretta
-                </CardDescription>
+                <CardDescription className="pt-2">Chiamata diretta</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="text-2xl font-semibold tracking-tight">
-                  +39 331 834 1262
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Lun–Ven: 9:00–19:00 • Sab: 9:00–13:00
-                </div>
+                <div className="text-2xl font-semibold tracking-tight">+39 331 834 1262</div>
+                <div className="text-sm text-muted-foreground">Lun–Ven:9:00–19:00 Sab:9:00–13:00</div>
                 <a
                   href="tel:+393318341262"
                   aria-label="Chiama +39 331 834 1262"
@@ -541,17 +502,11 @@ const Index = () => {
                   E-mail
                 </div>
                 <CardTitle className="sr-only">E-mail</CardTitle>
-                <CardDescription className="pt-2">
-                  Risposta entro 2 ore
-                </CardDescription>
+                <CardDescription className="pt-2">Risposta entro 2 ore</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="text-2xl font-semibold tracking-tight">
-                  info@miniconsulenze.it
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Assistenza generale e richieste servizi
-                </div>
+                <div className="text-2xl font-semibold tracking-tight">info@miniconsulenze.it</div>
+                <div className="text-sm text-muted-foreground">Assistenza generale e richieste servizi</div>
                 <a
                   href="mailto:info@miniconsulenze.it"
                   aria-label="Scrivi a info@miniconsulenze.it"
@@ -570,24 +525,18 @@ const Index = () => {
                   Chatta in diretta
                 </div>
                 <CardTitle className="sr-only">Chatta in diretta</CardTitle>
-                <CardDescription className="pt-2">
-                  Supporto immediato
-                </CardDescription>
+                <CardDescription className="pt-2">Supporto immediato</CardDescription>
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <div className="text-2xl font-semibold tracking-tight">
-                  In linea
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Assistenza in tempo reale per abbonati
-                </div>
+                <div className="text-2xl font-semibold tracking-tight">In linea</div>
+                <div className="text-sm text-muted-foreground">Assistenza in tempo reale per abbonati</div>
 
                 <button
                   onClick={() =>
                     window.open(
                       "https://wa.me/393471234567?text=" +
-                      encodeURIComponent("Ciao! Ho bisogno di assistenza."),
+                        encodeURIComponent("Ciao! Ho bisogno di assistenza."),
                       "_blank"
                     )
                   }
@@ -607,15 +556,11 @@ const Index = () => {
                   Ufficio
                 </div>
                 <CardTitle className="sr-only">Ufficio</CardTitle>
-                <CardDescription className="pt-2">
-                  Su appuntamento
-                </CardDescription>
+                <CardDescription className="pt-2">Su appuntamento</CardDescription>
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <div className="text-2xl font-semibold tracking-tight">
-                  Palermo Centro
-                </div>
+                <div className="text-2xl font-semibold tracking-tight">Palermo Centro</div>
                 <div className="text-sm text-muted-foreground leading-relaxed">
                   Via Principe di Villafranca, 43 Palermo
                 </div>
@@ -624,9 +569,9 @@ const Index = () => {
                   onClick={() =>
                     window.open(
                       "https://wa.me/393471234567?text=" +
-                      encodeURIComponent(
-                        "Ciao! Vorrei prenotare una visita presso l'ufficio di Palermo."
-                      ),
+                        encodeURIComponent(
+                          "Ciao! Vorrei prenotare una visita presso l'ufficio di Palermo."
+                        ),
                       "_blank"
                     )
                   }
@@ -645,6 +590,13 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* ---- MODAL DATI FATTURAZIONE ---- */}
+      <BillingModal
+        open={billingOpen}
+        onClose={() => setBillingOpen(false)}
+        onSubmit={handleBillingSubmit}
+      />
     </div>
   );
 };

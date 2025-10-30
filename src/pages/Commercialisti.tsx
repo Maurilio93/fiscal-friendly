@@ -96,7 +96,6 @@ export default function CommercialistiPage() {
   async function handleBuy(p: Pack) {
     try {
       if (!user) {
-        // se vuoi: redirect a /Login. Per ora messaggio chiaro:
         alert("Per acquistare, accedi o registrati.");
         return;
       }
@@ -300,6 +299,43 @@ export default function CommercialistiPage() {
               </CardContent>
             </Card>
           </div>
+        </div>
+      </section>
+
+      {/* ----- Sezione Contatti (anchor) ----- */}
+      <section id="contatti" className="py-16 px-4 bg-muted/40">
+        <div className="max-w-5xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle>Contatti</CardTitle>
+              <CardDescription>Parla con un consulente</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2 text-sm">
+                <p className="text-muted-foreground">
+                  Hai domande o vuoi una proposta su misura? Scrivici o chiamaci.
+                </p>
+                <p>
+                  <strong>Email:</strong>{" "}
+                  <a className="underline" href="mailto:info@miniconsulenze.it">
+                    info@miniconsulenze.it
+                  </a>
+                </p>
+                <p>
+                  <strong>Telefono:</strong>{" "}
+                  <a className="underline" href="tel:+393318341262">+39 331 834 1262</a>
+                </p>
+              </div>
+              <div className="flex items-end md:justify-end gap-2">
+                <a href="/contatti">
+                  <Button variant="outline">Vai alla pagina Contatti</Button>
+                </a>
+                <a href="mailto:info@miniconsulenze.it">
+                  <Button className="bg-gradient-hero hover:opacity-90">Scrivi ora</Button>
+                </a>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
     </main>

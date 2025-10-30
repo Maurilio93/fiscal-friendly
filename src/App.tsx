@@ -27,6 +27,8 @@ import CheckoutFailurePage from "./pages/CheckoutFailurePage";
 import Login from "./pages/Login";
 import SignupForm from "./components/SignupForm";
 import NotFound from "./pages/NotFound";
+import PasswordDimenticata from "./pages/PasswordDimenticata";
+import ResetPassword from "./pages/ResetPassword";
 
 import { CartProvider } from "./cart/CartContext";
 
@@ -61,6 +63,8 @@ const App = () => (
                   <Route path="/commercialisti" element={<CommercialistiPage />} />
                   <Route path="/lavora-con-noi" element={<LavoraConNoi />} />
                   <Route path="/contatti" element={<Contatti />} />
+                  <Route path="/password-dimenticata" element={<PasswordDimenticata />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/servizi/:id" element={<ServiceDetail />} />
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/checkout/success" element={<ThankYouPage />} />

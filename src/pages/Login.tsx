@@ -23,7 +23,7 @@ export default function Login() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Se già loggato, esci subito dalla pagina di login (senza chiamare /api/auth/me)
+  // Se già loggato, esci subito dalla pagina di login
   useEffect(() => {
     if (status === "user") {
       const next = new URLSearchParams(location.search).get("next") || "/area-utenti";
@@ -36,16 +36,16 @@ export default function Login() {
     setSubmitting(true);
     setError(null);
     try {
-      await login(email, password); // setta cookie HttpOnly lato server
-      await refreshAuth();          // aggiorna AuthProvider (status -> "user")
+      await login(email, password);
+      await refreshAuth();
       const next = new URLSearchParams(location.search).get("next") || "/area-utenti";
       navigate(next, { replace: true });
     } catch (err: unknown) {
       const msg =
         err instanceof Error
           ? (err.message.includes("invalid") || err.message.includes("401")
-              ? "Credenziali non valide."
-              : err.message)
+            ? "Credenziali non valide."
+            : err.message)
           : "Errore di accesso.";
       setError(msg);
     } finally {
@@ -82,6 +82,7 @@ export default function Login() {
                 disabled={submitting}
               />
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -93,6 +94,16 @@ export default function Login() {
                 required
                 disabled={submitting}
               />
+              {/* LINK RESET PASSWORD */}
+              <div className="mt-2 text-center">
+                <Link
+                  to="/password-dimenticata"
+                  className="text-sm text-primary hover:underline"
+                  aria-label="Password dimenticata? Reimposta la password"
+                >
+                  Password dimenticata? <span className="underline">Reimposta la password</span>
+                </Link>
+              </div>
             </div>
 
             {error && <p className="text-sm text-red-600">{error}</p>}

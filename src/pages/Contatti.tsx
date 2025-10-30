@@ -74,9 +74,9 @@ const Contatti = () => {
                   {TEL_DISPLAY}
                 </a>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Lun–Ven: 9:00–19:00
+                  Lun–Ven:9:00–19:00
                   <br />
-                  Sab: 9:00–13:00
+                  Sab:9:00–13:00
                 </p>
                 <a href={TEL_LINK} aria-label={`Chiama ${TEL_DISPLAY}`}>
                   <Button variant="outline" size="sm" className="w-full">

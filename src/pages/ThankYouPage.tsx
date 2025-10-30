@@ -1,3 +1,4 @@
+// src/pages/ThankYouPage.tsx
 import { useEffect, useState } from "react";
 import { useCart } from "@/cart/CartContext";
 import { Link } from "react-router-dom";
@@ -19,6 +20,23 @@ export default function ThankYouPage() {
   useEffect(() => {
     let on = true;
 
+    const verifyOnce = async () => {
+      let r = await fetch(`/api/payments/viva/verify`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderCode }),
+      });
+
+      if (!r.ok) {
+        r = await fetch(`/api/payments/viva/status/${encodeURIComponent(orderCode)}`, {
+          credentials: "include",
+        });
+      }
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    };
+
     (async () => {
       try {
         if (!orderCode) {
@@ -27,39 +45,34 @@ export default function ThankYouPage() {
           return;
         }
 
-        // 1) Tenta la sync con Viva (POST), poi fallback allo status locale (GET)
-        let r = await fetch(`/api/payments/viva/verify`, {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ orderCode }),
-        });
+        let attempts = 0;
+        while (attempts < 3) {
+          const data = await verifyOnce();
+          const st = String(data.status || data.state || "").toLowerCase();
 
-        if (!r.ok) {
-          r = await fetch(`/api/payments/viva/status/${encodeURIComponent(orderCode)}`, {
-            credentials: "include",
-          });
-        }
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-
-        const data = await r.json();
-        const st = String(data.status || data.state || "").toLowerCase();
-
-        if (st === "paid") {
-          // Svuota carrello se possibile, ma NON blocchiamo l'UI se fallisce
-          const out = await consumeOrderIfPaid();
-          if (!on) return;
-
-          if (out === "pending") setState("pending");
-          else setState("paid"); // out === "paid" o "error" => lo stato è comunque PAID lato server
-        } else if (st === "pending" || st === "created") {
-          if (on) setState("pending");
-        } else {
-          if (on) {
-            setState("error");
-            setMsg(`Stato: ${st || "sconosciuto"}`);
+          if (st === "paid") {
+            const out = await consumeOrderIfPaid();
+            if (!on) return;
+            setState(out === "pending" ? "pending" : "paid");
+            return;
           }
+          if (st === "pending" || st === "created") {
+            attempts += 1;
+            if (!on) return;
+            setState("pending");
+            await new Promise((res) => setTimeout(res, 2000));
+            continue;
+          }
+
+          // failed/expired/mismatch/unknown
+          if (!on) return;
+          setState("error");
+          setMsg(`Stato: ${st || "sconosciuto"}`);
+          return;
         }
+
+        // dopo i tentativi rimane pending
+        if (on) setState("pending");
       } catch (e: unknown) {
         if (!on) return;
         const errorMsg =
