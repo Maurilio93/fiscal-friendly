@@ -1,55 +1,65 @@
-import { useEffect, useState } from "react";
-import AdminLayout from "../components/AdminLayout";
-import { adminListOrders, adminListUsers, AdminOrder, AdminUser } from "@/lib/api";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Users, Receipt, FileText } from "lucide-react";
 
 export default function AdminHome() {
-  const [orders, setOrders] = useState<AdminOrder[]>([]);
-  const [users, setUsers] = useState<AdminUser[]>([]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const [o, u] = await Promise.all([adminListOrders(1, ""), adminListUsers(1, "")]);
-        setOrders(o.orders.slice(0, 5));
-        setUsers(u.users.slice(0, 5));
-      } catch {/* no-op */}
-    })();
-  }, []);
-
   return (
-    <AdminLayout>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader><CardTitle>Ultimi ordini</CardTitle></CardHeader>
+    <div className="max-w-7xl mx-auto px-4 py-6">
+      <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Dashboard</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="shadow-elegant">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Ordini</CardTitle>
+            <Receipt className="h-5 w-5 text-muted-foreground" />
+          </CardHeader>
           <CardContent>
-            <ul className="text-sm space-y-2">
-              {orders.map(o => (
-                <li key={o.orderCode} className="flex justify-between">
-                  <span>#{o.orderCode}</span>
-                  <span className="text-muted-foreground">{o.status}</span>
-                </li>
-              ))}
-              {!orders.length && <li className="text-muted-foreground">Nessun ordine</li>}
-            </ul>
+            <div className="text-3xl font-bold">—</div>
+            <p className="text-xs text-muted-foreground mt-1">Ultimi 30 giorni</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader><CardTitle>Ultimi utenti</CardTitle></CardHeader>
+        <Card className="shadow-elegant">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Utenti</CardTitle>
+            <Users className="h-5 w-5 text-muted-foreground" />
+          </CardHeader>
           <CardContent>
-            <ul className="text-sm space-y-2">
-              {users.map(u => (
-                <li key={u.id} className="flex justify-between">
-                  <span>{u.email}</span>
-                  <span className="text-muted-foreground">{u.role}</span>
-                </li>
-              ))}
-              {!users.length && <li className="text-muted-foreground">Nessun utente</li>}
-            </ul>
+            <div className="text-3xl font-bold">—</div>
+            <p className="text-xs text-muted-foreground mt-1">Totali iscritti</p>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-elegant">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Documenti</CardTitle>
+            <FileText className="h-5 w-5 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">—</div>
+            <p className="text-xs text-muted-foreground mt-1">Caricati dagli utenti</p>
           </CardContent>
         </Card>
       </div>
-    </AdminLayout>
+
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="shadow-elegant">
+          <CardHeader>
+            <CardTitle>Ultimi ordini</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Integriamo la tabella appena pronta l’API.
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-elegant">
+          <CardHeader>
+            <CardTitle>Ultimi utenti</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Integriamo la tabella appena pronta l’API.
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

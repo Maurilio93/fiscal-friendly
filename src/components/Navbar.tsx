@@ -1,4 +1,3 @@
-// src/components/Navbar.tsx
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,12 +12,9 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // stato auth + carrello
-  const auth = useAuth();
-  const user = auth?.user ?? null;
-  const status = auth?.status ?? "guest";
-  const setUser = auth?.setUser;
-  const refreshAuth = auth?.refreshAuth;
+  const { user, status, refreshAuth } = useAuth();
+  const isLoggedIn = status === "user" && !!user;
+  const isAdmin = isLoggedIn && user?.role === "admin";
 
   const { totalQty } = useCart();
 
@@ -33,25 +29,14 @@ const Navbar = () => {
   const isActive = (href: string) => location.pathname === href;
 
   const doLogout = async () => {
-    try {
-      await apiLogout();
-    } catch (e) {
-      console.debug("logout api error", e);
-    } finally {
-      if (typeof setUser === "function") setUser(null);
-      if (typeof refreshAuth === "function") {
-        try { await refreshAuth(); } catch {}
-      }
-      navigate("/");
-    }
+    try { await apiLogout(); } catch {}
+    await refreshAuth().catch(() => {});
+    navigate("/");
   };
 
   const AreaUtentiBtn = ({ className = "", full = false }: { className?: string; full?: boolean }) => (
     <Link to="/area-utenti" aria-label="Vai alla tua area utenti">
-      <Button
-        variant="default"
-        className={`${className} ${full ? "w-full" : ""} bg-gradient-hero hover:opacity-90 transition-smooth`}
-      >
+      <Button variant="default" className={`${className} ${full ? "w-full" : ""} bg-gradient-hero hover:opacity-90 transition-smooth`}>
         Area Utenti
       </Button>
     </Link>
@@ -59,10 +44,7 @@ const Navbar = () => {
 
   const AdminBtn = ({ className = "", full = false }: { className?: string; full?: boolean }) => (
     <Link to="/admin" aria-label="Vai al pannello Admin">
-      <Button
-        variant="outline"
-        className={`${className} ${full ? "w-full" : ""}`}
-      >
+      <Button variant="outline" className={`${className} ${full ? "w-full" : ""}`}>
         Admin
       </Button>
     </Link>
@@ -112,14 +94,11 @@ const Navbar = () => {
               </Button>
             </Link>
 
-            {/* Se admin, mostra anche il link Admin */}
-            {status === "user" && user?.role === "admin" && <AdminBtn />}
-
-            {/* Mostra SEMPRE Area Utenti */}
-            <AreaUtentiBtn />
+            {/* Se ADMIN mostra Admin, altrimenti Area Utenti */}
+            {isAdmin ? <AdminBtn /> : <AreaUtentiBtn />}
 
             {/* Logout solo se loggato */}
-            {status === "user" && user && (
+            {isLoggedIn && (
               <Button
                 onClick={doLogout}
                 variant="default"
@@ -177,20 +156,13 @@ const Navbar = () => {
                 </Button>
               </Link>
 
-              {/* Admin (Mobile) — solo se admin */}
-              {status === "user" && user?.role === "admin" && (
-                <div onClick={() => setIsOpen(false)}>
-                  <AdminBtn full className="mt-2" />
-                </div>
-              )}
-
-              {/* Area Utenti (Mobile) */}
+              {/* CTA (Mobile): Admin se admin, altrimenti Area Utenti */}
               <div onClick={() => setIsOpen(false)}>
-                <AreaUtentiBtn full className="mt-2" />
+                {isAdmin ? <AdminBtn full className="mt-2" /> : <AreaUtentiBtn full className="mt-2" />}
               </div>
 
               {/* Logout (Mobile) */}
-              {status === "user" && user && (
+              {isLoggedIn && (
                 <Button
                   onClick={async () => {
                     setIsOpen(false);
