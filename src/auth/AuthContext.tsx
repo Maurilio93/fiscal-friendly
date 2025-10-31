@@ -1,50 +1,53 @@
-// src/auth/AuthContext.tsx
-import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
+// src/auth/AuthContext.tsx (estratto rilevante)
+import { createContext, useContext, useEffect, useState } from "react";
+import type { User } from "@/lib/api";
+import { getStatus } from "@/lib/api"; // ⬅️ usa l'helper che rispetta API_BASE
 
-export type User = { id: string; name: string; email: string } | null;
-type AuthState = { status: "loading" | "guest" | "user"; user: User };
-
-type CtxShape = AuthState & {
-  setUser: (u: User) => void;
+type AuthState = "guest" | "user";
+type Ctx = {
+  status: AuthState;
+  user: User;
+  ready: boolean;
   refreshAuth: () => Promise<void>;
 };
 
-const Ctx = createContext<CtxShape>({
-  status: "loading",
+const AuthCtx = createContext<Ctx>({
+  status: "guest",
   user: null,
-  setUser: () => {},
+  ready: false,
   refreshAuth: async () => {},
 });
 
-export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const [state, setState] = useState<AuthState>({ status: "loading", user: null });
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [status, setStatus] = useState<AuthState>("guest");
+  const [user, setUser] = useState<User>(null);
+  const [ready, setReady] = useState(false);
 
-  const refreshAuth = async () => {
+  async function bootstrap() {
     try {
-      const r = await fetch("/api/auth/status", { credentials: "include" });
-      const j = await r.json();
-      if (j?.auth === "user" && j?.user) {
-        setState({ status: "user", user: j.user });
-      } else {
-        setState({ status: "guest", user: null });
-      }
+      const r = await getStatus();      // ⬅️ QUI l’helper http() usa API_BASE
+      setStatus(r.auth);
+      setUser(r.user);
     } catch {
-      setState({ status: "guest", user: null });
+      setStatus("guest");
+      setUser(null);
+    } finally {
+      setReady(true);
     }
-  };
+  }
 
-  useEffect(() => { void refreshAuth(); }, []);
+  useEffect(() => { bootstrap(); }, []);
 
-  const setUser = (u: User) => {
-    setState(prev => ({ status: u ? "user" : "guest", user: u }));
-  };
+  async function refreshAuth() {
+    setReady(false);
+    await bootstrap();
+  }
 
-  const value = useMemo(() => ({ ...state, setUser, refreshAuth }), [state]);
+  return (
+    <AuthCtx.Provider value={{ status, user, ready, refreshAuth }}>
+      {children}
+    </AuthCtx.Provider>
+  );
+}
 
-  // Finché non sappiamo se guest o user, NON renderizziamo l'app per evitare cambi di albero
-  if (state.status === "loading") return <div style={{ padding: 16 }}>Caricamento…</div>;
-
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
-};
-
-export const useAuth = () => useContext(Ctx);
+export const useAuth = () => useContext(AuthCtx);

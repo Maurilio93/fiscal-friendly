@@ -1,20 +1,42 @@
-// src/auth/ProtectedRoute.tsx
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 
-const ProtectedRoute: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { status } = useAuth(); // viene dal nuovo AuthContext che abbiamo appena preparato
-  const loc = useLocation();
+type Props = {
+  children: React.ReactNode;
+  admin?: boolean;
+  fallbackTo?: string;
+};
 
-  if (status === "loading") return null; // il Provider mostra già un placeholder
+export default function ProtectedRoute({
+  children,
+  admin = false,
+  fallbackTo = "/login",
+}: Props) {
+  const { status, ready, user } = useAuth();
+  const location = useLocation();
 
-  if (status === "guest") {
-    const next = encodeURIComponent(loc.pathname + loc.search);
-    return <Navigate to={`/login?next=${next}`} replace />;
+  if (!ready) {
+    return (
+      <div className="min-h-[50vh] grid place-items-center text-muted-foreground">
+        Verifica credenziali…
+      </div>
+    );
+  }
+
+  if (status !== "user") {
+    return (
+      <Navigate
+        to={fallbackTo}
+        replace
+        state={{ from: location.pathname }}
+      />
+    );
+  }
+
+  if (admin && user?.role !== "admin") {
+    return <Navigate to="/area-utenti" replace />;
   }
 
   return <>{children}</>;
-};
-
-export default ProtectedRoute;
+}

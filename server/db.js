@@ -1,17 +1,22 @@
-const path = require("path");
-require("dotenv").config({ path: path.join(__dirname, ".env") });
+// server/src/db.ts (o il file dove crei il pool)
+import mysql from "mysql2/promise";
 
-const mysql = require("mysql2/promise");
-
-const pool = mysql.createPool({
+export const pool = mysql.createPool({
   host: process.env.DB_HOST || "127.0.0.1",
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
   port: Number(process.env.DB_PORT || 3306),
+  user: process.env.DB_USER || "consultfast_user",
+  password: process.env.DB_PASS || "",
+  database: process.env.DB_NAME || "consultfast_prod",
+
+  // impostazioni consigliate
   waitForConnections: true,
   connectionLimit: 10,
-  timezone: "Z",
-});
+  queueLimit: 0,
+  charset: "utf8mb4",
 
-module.exports = { pool };
+  // 👇 fondamentale con MySQL 8 se non usi SSL
+  allowPublicKeyRetrieval: true,
+
+  // se non stai usando TLS, lascialo false
+  ssl: false,
+});

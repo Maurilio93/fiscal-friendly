@@ -12,11 +12,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 
+// Pagine pubbliche
 import Index from "./pages/Index";
 import ChiSiamo from "./pages/ChiSiamo";
 import Servizi from "./pages/Servizi";
 import ComeFunziona from "./pages/ComeFunziona";
-import AreaUtenti from "./pages/AreaUtenti";
 import CommercialistiPage from "./pages/Commercialisti";
 import LavoraConNoi from "./pages/LavoraConNoi";
 import Contatti from "./pages/Contatti";
@@ -29,6 +29,19 @@ import SignupForm from "./components/SignupForm";
 import NotFound from "./pages/NotFound";
 import PasswordDimenticata from "./pages/PasswordDimenticata";
 import ResetPassword from "./pages/ResetPassword";
+
+// AREA UTENTI (layout + sottopagine)
+import UserLayout from "./pages/components/UserLayout";
+import AreaUtentiHome from "./pages/AreaUtenti/index";
+import AreaUtentiOrdini from "./pages/AreaUtenti/Ordini";
+import AreaUtentiDocumenti from "./pages/AreaUtenti/Documenti";
+
+// ADMIN (layout + sottopagine)
+import AdminLayout from "./pages/components/AdminLayout";
+import AdminHome from "./pages/Admin/index";
+import AdminOrdini from "./pages/Admin/Ordini";
+import AdminUtenti from "./pages/Admin/Utenti";
+import AdminLog from "./pages/Admin/Log";
 
 import { CartProvider } from "./cart/CartContext";
 
@@ -48,29 +61,53 @@ const App = () => (
               <Navbar />
               <main className="flex-1">
                 <Routes>
+                  {/* Pubbliche */}
                   <Route path="/" element={<Index />} />
                   <Route path="/chi-siamo" element={<ChiSiamo />} />
                   <Route path="/servizi" element={<Servizi />} />
+                  <Route path="/servizi/:id" element={<ServiceDetail />} />
                   <Route path="/come-funziona" element={<ComeFunziona />} />
-                  <Route
-                    path="/area-utenti"
-                    element={
-                      <ProtectedRoute>
-                        <AreaUtenti />
-                      </ProtectedRoute>
-                    }
-                  />
                   <Route path="/commercialisti" element={<CommercialistiPage />} />
                   <Route path="/lavora-con-noi" element={<LavoraConNoi />} />
                   <Route path="/contatti" element={<Contatti />} />
-                  <Route path="/password-dimenticata" element={<PasswordDimenticata />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/servizi/:id" element={<ServiceDetail />} />
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/checkout/success" element={<ThankYouPage />} />
                   <Route path="/checkout/failure" element={<CheckoutFailurePage />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/registrazione" element={<SignupForm />} />
+                  <Route path="/password-dimenticata" element={<PasswordDimenticata />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+
+                  {/* AREA UTENTI protetta */}
+                  <Route
+                    path="/area-utenti"
+                    element={
+                      <ProtectedRoute>
+                        <UserLayout children={""} />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route index element={<AreaUtentiHome />} />
+                    <Route path="ordini" element={<AreaUtentiOrdini />} />
+                    <Route path="documenti" element={<AreaUtentiDocumenti />} />
+                  </Route>
+
+                  {/* ADMIN protetto (solo ruolo admin) */}
+                  <Route
+                    path="/admin"
+                    element={
+                      <ProtectedRoute admin>
+                        <AdminLayout children={""} />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route index element={<AdminHome />} />
+                    <Route path="ordini" element={<AdminOrdini />} />
+                    <Route path="utenti" element={<AdminUtenti />} />
+                    <Route path="log" element={<AdminLog />} />
+                  </Route>
+
+                  {/* 404 */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
