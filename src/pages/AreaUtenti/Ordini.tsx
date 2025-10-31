@@ -1,44 +1,66 @@
+
 import { useEffect, useState } from "react";
-import UserLayout from "../components/UserLayout";
-import { getOverview } from "@/lib/api";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
+type MeOrder = {
+  orderCode: string;
+  status: string;
+  amountCents: number;
+  created_at?: string;
+};
 
 export default function AreaUtentiOrdini() {
-  const [rows, setRows] = useState<any[]>([]);
-  useEffect(() => { (async () => {
-    const r = await getOverview();
-    setRows(Array.isArray(r.orders) ? r.orders : []);
-  })(); }, []);
+  const [rows, setRows] = useState<MeOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // TODO: sostituire con la tua API /api/me/orders quando pronta
+  useEffect(() => {
+    setLoading(true);
+    (async () => {
+      // finto dato finché non esiste l’endpoint
+      setRows([]);
+      setLoading(false);
+    })();
+  }, []);
 
   return (
-    <UserLayout>
-      <div className="rounded-xl border p-5">
-        <h2 className="text-lg font-semibold mb-4">I tuoi ordini</h2>
-        <div className="overflow-auto">
+    <Card className="shadow-sm">
+      <CardHeader>
+        <CardTitle>I tuoi Ordini</CardTitle>
+      </CardHeader>
+      <CardContent className="overflow-x-auto">
+        {loading ? (
+          <div className="text-sm text-muted-foreground">Caricamento…</div>
+        ) : rows.length === 0 ? (
+          <div className="text-sm text-muted-foreground">Nessun ordine presente.</div>
+        ) : (
           <table className="w-full text-sm">
-            <thead className="text-left border-b">
+            <thead className="text-left text-muted-foreground">
               <tr>
-                <th className="py-2 pr-2">Codice</th>
-                <th className="py-2 pr-2">Importo</th>
-                <th className="py-2 pr-2">Stato</th>
-                <th className="py-2">Data</th>
+                <th className="py-2 pr-4">Ordine</th>
+                <th className="py-2 pr-4">Data</th>
+                <th className="py-2 pr-4">Importo</th>
+                <th className="py-2 pr-4">Stato</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map((o:any) => (
-                <tr key={o.orderCode} className="border-b last:border-0">
-                  <td className="py-2 pr-2">{o.orderCode}</td>
-                  <td className="py-2 pr-2">{(o.amountCents/100).toFixed(2)} €</td>
-                  <td className="py-2 pr-2">{o.status}</td>
-                  <td className="py-2">{o.created_at?.replace("T"," ").slice(0,16) ?? "—"}</td>
+              {rows.map((r) => (
+                <tr key={r.orderCode} className="border-t">
+                  <td className="py-2 pr-4">{r.orderCode}</td>
+                  <td className="py-2 pr-4">{r.created_at?.slice(0, 16)?.replace("T", " ") ?? "-"}</td>
+                  <td className="py-2 pr-4">{(r.amountCents / 100).toFixed(2)} €</td>
+                  <td className="py-2 pr-4">
+                    <Badge variant={r.status === "paid" ? "default" : r.status === "failed" ? "destructive" : "secondary"}>
+                      {r.status}
+                    </Badge>
+                  </td>
                 </tr>
               ))}
-              {!rows.length && (
-                <tr><td colSpan={4} className="py-6 text-center text-muted-foreground">Nessun ordine</td></tr>
-              )}
             </tbody>
           </table>
-        </div>
-      </div>
-    </UserLayout>
+        )}
+      </CardContent>
+    </Card>
   );
 }

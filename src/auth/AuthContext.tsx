@@ -5,6 +5,7 @@ import { getStatus } from "@/lib/api"; // ⬅️ usa l'helper che rispetta API_B
 
 type AuthState = "guest" | "user";
 type Ctx = {
+  setUser: any;
   status: AuthState;
   user: User;
   ready: boolean;

@@ -1,3 +1,4 @@
+// src/components/Navbar.tsx
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,12 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   // stato auth + carrello
-  const { user, status, setUser, refreshAuth } = useAuth();
+  const auth = useAuth();
+  const user = auth?.user ?? null;
+  const status = auth?.status ?? "guest";
+  const setUser = auth?.setUser;
+  const refreshAuth = auth?.refreshAuth;
+
   const { totalQty } = useCart();
 
   const navigation = [
@@ -29,10 +35,15 @@ const Navbar = () => {
   const doLogout = async () => {
     try {
       await apiLogout();
+    } catch (e) {
+      // opzionale: log silenzioso
+      console.debug("logout api error", e);
     } finally {
-      setUser(null);
-      await refreshAuth();        // allinea subito lo stato del provider
-      navigate("/");              // redirect “pulito” senza full reload
+      if (typeof setUser === "function") setUser(null);
+      if (typeof refreshAuth === "function") {
+        try { await refreshAuth(); } catch {}
+      }
+      navigate("/");
     }
   };
 
@@ -94,10 +105,10 @@ const Navbar = () => {
             {/* Mostra SEMPRE Area Utenti */}
             <AreaUtentiBtn />
 
-            {/* Logout solo se loggato; nascondi mentre status è "loading" per evitare flicker */}
+            {/* Logout solo se loggato */}
             {status === "user" && user && (
               <Button
-                onClick={doLogout}
+                onClick={doLogout}            // <-- callback passata, NON invocata
                 variant="default"
                 className="bg-[#FF6B6B] hover:bg-[#e85a5a] transition-smooth"
                 aria-label="Esci"
@@ -153,12 +164,12 @@ const Navbar = () => {
                 </Button>
               </Link>
 
-              {/* Area Utenti (Mobile) — sempre visibile */}
+              {/* Area Utenti (Mobile) */}
               <div onClick={() => setIsOpen(false)}>
                 <AreaUtentiBtn full className="mt-2" />
               </div>
 
-              {/* Logout (Mobile) — solo se loggato */}
+              {/* Logout (Mobile) */}
               {status === "user" && user && (
                 <Button
                   onClick={async () => {

@@ -1,41 +1,40 @@
-// src/pages/AreaUtenti/components/UserLayout.tsx
-import { NavLink } from "react-router-dom";
+import { ReactNode } from "react";
+import { Link } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
 
-export default function UserLayout({ children }: { children: React.ReactNode }) {
+type Props = {
+  title?: string;
+  subtitle?: string;
+  children: ReactNode;
+  tabs?: ReactNode;
+};
+
+export default function UserLayout({ title = "Area Utenti", subtitle, tabs, children }: Props) {
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      {/* Mini-nav utente */}
-      <div className="mb-6 flex items-center gap-4 text-sm">
-        <NavLink
-          to="/area-utenti"
-          end
-          className={({ isActive }) =>
-            isActive ? "font-semibold" : "text-muted-foreground hover:text-foreground"
-          }
-        >
-          Panoramica
-        </NavLink>
-        <span className="text-muted-foreground">•</span>
-        <NavLink
-          to="/area-utenti/ordini"
-          className={({ isActive }) =>
-            isActive ? "font-semibold" : "text-muted-foreground hover:text-foreground"
-          }
-        >
-          Ordini
-        </NavLink>
-        <span className="text-muted-foreground">•</span>
-        <NavLink
-          to="/area-utenti/documenti"
-          className={({ isActive }) =>
-            isActive ? "font-semibold" : "text-muted-foreground hover:text-foreground"
-          }
-        >
-          Documenti
-        </NavLink>
+    <div className="min-h-[70vh] bg-muted/30">
+      {/* top bar/breadcrumb */}
+      <div className="w-full border-b bg-background">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center gap-2 text-sm text-muted-foreground">
+          <Link to="/" className="hover:text-primary">Miniconsulenze</Link>
+          <span>›</span>
+          <span className="text-foreground">Area Utenti</span>
+        </div>
       </div>
 
-      {children}
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{title}</h1>
+          {subtitle && <p className="text-muted-foreground mt-1">{subtitle}</p>}
+        </div>
+
+        {tabs}
+
+        <Card className="shadow-elegant mt-6">
+          <CardContent className="p-6">
+            {children}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
