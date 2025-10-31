@@ -1,12 +1,7 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/auth/AuthContext";
 
-/**
- * Protegge una rotta per utenti autenticati.
- * - Se admin=true richiede anche role === "admin".
- * - Se non autorizzato -> redirect a /login con ?next=<path attuale>
- */
 export default function ProtectedRoute({
   children,
   admin = false,
@@ -16,24 +11,34 @@ export default function ProtectedRoute({
 }) {
   const { status, user, refreshAuth } = useAuth();
   const location = useLocation();
+  const [hydrated, setHydrated] = useState(false);
 
-  // All'avvio, se non sappiamo ancora nulla, prova ad aggiornare lo stato
+  // Primo mount: sincronizza lo stato auth, poi sblocca la valutazione
   useEffect(() => {
-    if (status !== "user") {
-      // non blocca l'UI; se già noto resta così
-      refreshAuth().catch(() => {});
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    let alive = true;
+    (async () => {
+      try {
+        await refreshAuth();
+      } finally {
+        if (alive) setHydrated(true);
+      }
+    })();
+    return () => { alive = false; };
+  }, [refreshAuth]);
 
-  const next = encodeURIComponent(location.pathname + location.search);
+  const next = encodeURIComponent(
+    `${location.pathname}${location.search}${location.hash || ""}`
+  );
 
-  // non loggato -> vai al login
+  // Finché non abbiamo provato ad aggiornare l’auth, non decidere (evita flicker)
+  if (!hydrated) return null; // o un piccolo spinner
+
+  // Non loggato -> login
   if (status !== "user") {
     return <Navigate to={`/login?next=${next}`} replace />;
   }
 
-  // richiede admin ma l'utente non lo è
+  // Richiede admin ma non lo è -> login (o 403, a tua scelta)
   if (admin && user?.role !== "admin") {
     return <Navigate to={`/login?next=${next}`} replace />;
   }
