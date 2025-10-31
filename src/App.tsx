@@ -30,13 +30,13 @@ import NotFound from "./pages/NotFound";
 import PasswordDimenticata from "./pages/PasswordDimenticata";
 import ResetPassword from "./pages/ResetPassword";
 
-// AREA UTENTI (layout + sottopagine)
+// AREA UTENTI
 import UserLayout from "./pages/components/UserLayout";
 import AreaUtentiHome from "./pages/AreaUtenti/index";
 import AreaUtentiOrdini from "./pages/AreaUtenti/Ordini";
 import AreaUtentiDocumenti from "./pages/AreaUtenti/Documenti";
 
-// ADMIN (layout + sottopagine)
+// ADMIN
 import AdminLayout from "./pages/components/AdminLayout";
 import AdminHome from "./pages/Admin/index";
 import AdminOrdini from "./pages/Admin/Ordini";
@@ -54,7 +54,6 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
-        {/* AuthProvider (usa /api/auth/status) prima di tutto; poi CartProvider */}
         <AuthProvider>
           <CartProvider>
             <div className="min-h-screen flex flex-col overflow-x-hidden">
@@ -83,7 +82,7 @@ const App = () => (
                     path="/area-utenti"
                     element={
                       <ProtectedRoute>
-                        <UserLayout children={""} />
+                        <UserLayout/>
                       </ProtectedRoute>
                     }
                   >
@@ -92,12 +91,12 @@ const App = () => (
                     <Route path="documenti" element={<AreaUtentiDocumenti />} />
                   </Route>
 
-                  {/* ADMIN protetto (solo ruolo admin) */}
+                  {/* ADMIN protetto */}
                   <Route
                     path="/admin"
                     element={
                       <ProtectedRoute admin>
-                        <AdminLayout children={""} />
+                        <AdminLayout/>
                       </ProtectedRoute>
                     }
                   >

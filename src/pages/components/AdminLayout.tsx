@@ -1,7 +1,6 @@
-// src/pages/Admin/components/AdminLayout.tsx
-import { NavLink } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       {/* Mini-nav admin */}
@@ -15,6 +14,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         >
           Dashboard
         </NavLink>
+
         <span className="text-muted-foreground">•</span>
         <NavLink
           to="/admin/ordini"
@@ -24,6 +24,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         >
           Ordini
         </NavLink>
+
         <span className="text-muted-foreground">•</span>
         <NavLink
           to="/admin/utenti"
@@ -33,6 +34,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         >
           Utenti
         </NavLink>
+
         <span className="text-muted-foreground">•</span>
         <NavLink
           to="/admin/log"
@@ -44,7 +46,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </NavLink>
       </div>
 
-      {children}
+      {/* Qui dentro vengono rese le sottopagine admin */}
+      <Outlet />
     </div>
   );
 }
