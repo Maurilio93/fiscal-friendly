@@ -108,7 +108,9 @@ export const registerUser = (body: { name: string; email: string; password: stri
   });
 
 export const login = (email: string, password: string) =>
-  http<{ user: { id: string; name: string; email: string } }>("/api/auth/login", {
+  http<{ user: {
+    role: string; id: string; name: string; email: string 
+} }>("/api/auth/login", {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });

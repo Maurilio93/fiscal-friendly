@@ -1,27 +1,19 @@
 // /httpdocs/server/index.js
-
-/* ==================== ENV LOAD ROBUSTO ==================== */
-const fs = require("fs");
 const path = require("path");
-const dotenv = require("dotenv");
-
-(() => {
-  const candidates = [
-    path.join(__dirname, ".env"),     // produzione Plesk: /httpdocs/server/.env
-    path.join(process.cwd(), ".env"), // sviluppo: cartella da cui avvii node
-  ];
-  for (const p of candidates) {
-    if (fs.existsSync(p)) {
-      dotenv.config({ path: p });
-      console.log("[ENV] loadedFrom:", p);
-      return;
-    }
+// Carica .env da /server/.env se esiste, altrimenti prova anche a risalire di una cartella
+try {
+  const localEnv = path.join(__dirname, ".env");
+  require("dotenv").config({ path: localEnv });
+} catch {}
+try {
+  if (!process.env.DB_HOST || !process.env.MYSQL_HOST) {
+    const rootEnv = path.join(__dirname, "..", ".env");
+    require("dotenv").config({ path: rootEnv });
   }
-  console.warn("[ENV] .env NON trovato");
-})();
+} catch {}
 
-/* ==================== DEPENDENZE ==================== */
 const crypto = require("crypto");
+const fs = require("fs");
 const express = require("express");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
@@ -29,6 +21,7 @@ const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
+
 
 /* ==================== UPLOAD ==================== */
 const UPLOAD_DIR = process.env.LOCAL_UPLOAD_DIR || path.join(__dirname, "uploads");

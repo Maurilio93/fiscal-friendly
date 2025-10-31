@@ -1,15 +1,16 @@
-// src/auth/AuthContext.tsx (estratto rilevante)
-import { createContext, useContext, useEffect, useState } from "react";
+// src/auth/AuthContext.tsx
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { User } from "@/lib/api";
-import { getStatus } from "@/lib/api"; // ⬅️ usa l'helper che rispetta API_BASE
+import { getStatus } from "@/lib/api";
 
 type AuthState = "guest" | "user";
+
 type Ctx = {
-  setUser: any;
   status: AuthState;
-  user: User;
+  user: User; // { id, name, email, role?: "user" | "admin" } | null  (da @/lib/api)
   ready: boolean;
   refreshAuth: () => Promise<void>;
+  setUser: React.Dispatch<React.SetStateAction<User>>;
 };
 
 const AuthCtx = createContext<Ctx>({
@@ -17,18 +18,19 @@ const AuthCtx = createContext<Ctx>({
   user: null,
   ready: false,
   refreshAuth: async () => {},
+  setUser: () => {}, // no-op di default (evita "is not a function")
 });
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthState>("guest");
   const [user, setUser] = useState<User>(null);
   const [ready, setReady] = useState(false);
 
   async function bootstrap() {
     try {
-      const r = await getStatus();      // ⬅️ QUI l’helper http() usa API_BASE
+      const r = await getStatus(); // usa http() con API_BASE corretta
       setStatus(r.auth);
-      setUser(r.user);
+      setUser(r.user);             // conserva anche r.user.role (admin/user)
     } catch {
       setStatus("guest");
       setUser(null);
@@ -37,7 +39,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  useEffect(() => { bootstrap(); }, []);
+  useEffect(() => {
+    void bootstrap();
+  }, []);
 
   async function refreshAuth() {
     setReady(false);
@@ -45,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthCtx.Provider value={{ status, user, ready, refreshAuth }}>
+    <AuthCtx.Provider value={{ status, user, ready, refreshAuth, setUser }}>
       {children}
     </AuthCtx.Provider>
   );

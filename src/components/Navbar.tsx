@@ -36,7 +36,6 @@ const Navbar = () => {
     try {
       await apiLogout();
     } catch (e) {
-      // opzionale: log silenzioso
       console.debug("logout api error", e);
     } finally {
       if (typeof setUser === "function") setUser(null);
@@ -54,6 +53,17 @@ const Navbar = () => {
         className={`${className} ${full ? "w-full" : ""} bg-gradient-hero hover:opacity-90 transition-smooth`}
       >
         Area Utenti
+      </Button>
+    </Link>
+  );
+
+  const AdminBtn = ({ className = "", full = false }: { className?: string; full?: boolean }) => (
+    <Link to="/admin" aria-label="Vai al pannello Admin">
+      <Button
+        variant="outline"
+        className={`${className} ${full ? "w-full" : ""}`}
+      >
+        Admin
       </Button>
     </Link>
   );
@@ -102,13 +112,16 @@ const Navbar = () => {
               </Button>
             </Link>
 
+            {/* Se admin, mostra anche il link Admin */}
+            {status === "user" && user?.role === "admin" && <AdminBtn />}
+
             {/* Mostra SEMPRE Area Utenti */}
             <AreaUtentiBtn />
 
             {/* Logout solo se loggato */}
             {status === "user" && user && (
               <Button
-                onClick={doLogout}            // <-- callback passata, NON invocata
+                onClick={doLogout}
                 variant="default"
                 className="bg-[#FF6B6B] hover:bg-[#e85a5a] transition-smooth"
                 aria-label="Esci"
@@ -163,6 +176,13 @@ const Navbar = () => {
                   )}
                 </Button>
               </Link>
+
+              {/* Admin (Mobile) — solo se admin */}
+              {status === "user" && user?.role === "admin" && (
+                <div onClick={() => setIsOpen(false)}>
+                  <AdminBtn full className="mt-2" />
+                </div>
+              )}
 
               {/* Area Utenti (Mobile) */}
               <div onClick={() => setIsOpen(false)}>

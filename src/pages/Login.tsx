@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import { login } from "../lib/api";
+import { login, getStatus } from "../lib/api";
 import {
   Card,
   CardHeader,
@@ -23,11 +23,11 @@ export default function Login() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Se già loggato, esci subito dalla pagina di login
+  // Se già loggato, salta la pagina login
   useEffect(() => {
     if (status === "user") {
-      const next = new URLSearchParams(location.search).get("next") || "/area-utenti";
-      navigate(next, { replace: true });
+      const next = new URLSearchParams(location.search).get("next");
+      navigate(next || "/area-utenti", { replace: true });
     }
   }, [status, location.search, navigate]);
 
@@ -35,17 +35,25 @@ export default function Login() {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
+
     try {
-      await login(email, password);
+      await login(email.trim(), password);
+      // allinea il contesto
       await refreshAuth();
-      const next = new URLSearchParams(location.search).get("next") || "/area-utenti";
-      navigate(next, { replace: true });
+      // verifica ruolo aggiornato (garantito lato server)
+      const s = await getStatus().catch(() => null);
+      const role = s?.user?.role;
+
+      const next = new URLSearchParams(location.search).get("next");
+      const fallback = role === "admin" ? "/admin" : "/area-utenti";
+
+      navigate(next || fallback, { replace: true });
     } catch (err: unknown) {
       const msg =
         err instanceof Error
-          ? (err.message.includes("invalid") || err.message.includes("401")
+          ? err.message.includes("401") || /invalid/i.test(err.message)
             ? "Credenziali non valide."
-            : err.message)
+            : err.message
           : "Errore di accesso.";
       setError(msg);
     } finally {
@@ -94,14 +102,15 @@ export default function Login() {
                 required
                 disabled={submitting}
               />
-              {/* LINK RESET PASSWORD */}
+
               <div className="mt-2 text-center">
                 <Link
                   to="/password-dimenticata"
                   className="text-sm text-primary hover:underline"
                   aria-label="Password dimenticata? Reimposta la password"
                 >
-                  Password dimenticata? <span className="underline">Reimposta la password</span>
+                  Password dimenticata?{" "}
+                  <span className="underline">Reimposta la password</span>
                 </Link>
               </div>
             </div>
