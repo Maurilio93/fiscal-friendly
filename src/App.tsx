@@ -41,7 +41,6 @@ import AdminLayout from "./pages/components/AdminLayout";
 import AdminHome from "./pages/Admin/index";
 import AdminOrdini from "./pages/Admin/Ordini";
 import AdminUtenti from "./pages/Admin/Utenti";
-import AdminLog from "./pages/Admin/Log";
 
 import { CartProvider } from "./cart/CartContext";
 
@@ -103,7 +102,6 @@ const App = () => (
                     <Route index element={<AdminHome />} />
                     <Route path="ordini" element={<AdminOrdini />} />
                     <Route path="utenti" element={<AdminUtenti />} />
-                    <Route path="log" element={<AdminLog />} />
                   </Route>
 
                   {/* 404 */}
