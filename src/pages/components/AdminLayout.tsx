@@ -43,21 +43,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         >
           Utenti
         </NavLink>
-        <span className="text-muted-foreground">•</span>
-        <NavLink
-          to="/admin/log"
-          className={({ isActive }) =>
-            isActive
-              ? "font-semibold"
-              : "text-muted-foreground hover:text-foreground"
-          }
-        >
-          Log
-        </NavLink>
       </div>
 
       {/* Se viene usato in <Route element={<AdminLayout />}>, Outlet renderizza le sottopagine */}
       <Outlet />
+
+      {/* Se qualcuno passa children direttamente, mostriamo anche quelli */}
+      {children}
     </div>
   );
 }
