@@ -58,9 +58,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Se viene usato in <Route element={<AdminLayout />}>, Outlet renderizza le sottopagine */}
       <Outlet />
-
-      {/* Se qualcuno passa children direttamente, mostriamo anche quelli */}
-      {children}
     </div>
   );
 }

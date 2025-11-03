@@ -204,7 +204,9 @@ export const adminListUsers = (page = 1, q = "") =>
   );
 
 export const adminListLogs = (page = 1, level = "") =>
-  http<{ logs: AdminLog[]; page: number; total: number }>(
+  http<{
+    items: AdminLog[]; logs: AdminLog[]; page: number; total: number 
+}>(
     `/api/admin/logs?page=${page}&level=${encodeURIComponent(level)}`
   );
 

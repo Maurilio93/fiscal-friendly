@@ -33,7 +33,6 @@ export default function AdminHome() {
   const fmt = (n: number | undefined) => (typeof n === "number" ? n.toLocaleString("it-IT") : "—");
 
   return (
-    <AdminLayout>
       <div className="max-w-7xl mx-auto px-4 py-6">
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Dashboard</h1>
 
@@ -92,6 +91,5 @@ export default function AdminHome() {
           </Card>
         </div>
       </div>
-    </AdminLayout>
   );
 }
