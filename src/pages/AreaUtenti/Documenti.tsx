@@ -20,6 +20,7 @@ export default function AreaUtentiDocumenti() {
   const [docs, setDocs] = useState<Doc[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [removing, setRemoving] = useState<string | null>(null);
 
   // form
   const [label, setLabel] = useState("");
@@ -84,6 +85,27 @@ export default function AreaUtentiDocumenti() {
     }
   }
 
+  async function onRemove(docId: string) {
+    if (!window.confirm("Sicuro di voler cancellare questo documento?")) return;
+    setRemoving(docId);
+    try {
+      const res = await fetch(`/api/me/documents/${docId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const j = await res.json();
+      if (!res.ok || !j?.ok) {
+        alert("Errore nella rimozione del documento");
+      } else {
+        await load();
+      }
+    } catch {
+      alert("Errore di rete!");
+    } finally {
+      setRemoving(null);
+    }
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
       {/* Lista */}
@@ -113,14 +135,25 @@ export default function AreaUtentiDocumenti() {
                         </div>
                       </div>
                     </div>
-                    <a
-                      href={d.file_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-sm underline hover:opacity-80"
-                    >
-                      Apri
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={d.file_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm underline hover:opacity-80"
+                      >
+                        Apri
+                      </a>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="ml-2"
+                        disabled={removing === d.id}
+                        onClick={() => onRemove(d.id)}
+                      >
+                        {removing === d.id ? "Eliminazione..." : "Elimina"}
+                      </Button>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -128,7 +161,6 @@ export default function AreaUtentiDocumenti() {
           </CardContent>
         </Card>
       </div>
-
       {/* Upload */}
       <div className="lg:col-span-2">
         <Card className="shadow-sm">
@@ -141,12 +173,10 @@ export default function AreaUtentiDocumenti() {
                 <Label htmlFor="label">Etichetta</Label>
                 <Input id="label" value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Es. Documento identità" />
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="order">Ordine (opzionale)</Label>
                 <Input id="order" value={orderCode} onChange={(e) => setOrderCode(e.target.value)} placeholder="OrderCode se vuoi collegarlo" />
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="file">File (PDF / Immagini)</Label>
                 <Input
@@ -156,10 +186,8 @@ export default function AreaUtentiDocumenti() {
                   onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                 />
               </div>
-
               {err && <div className="text-sm text-red-600">{err}</div>}
               {ok && <div className="text-sm text-green-600">{ok}</div>}
-
               <Button type="submit" disabled={sending} className="bg-gradient-hero hover:opacity-90">
                 {sending ? "Caricamento..." : "Carica"}
               </Button>
