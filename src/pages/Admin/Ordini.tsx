@@ -20,7 +20,6 @@ export default function AdminOrdini() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Ordini</h1>
       <Card>
         <CardHeader>
           <CardTitle>Ordini</CardTitle>
