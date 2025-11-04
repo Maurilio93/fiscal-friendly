@@ -3,6 +3,7 @@ import { adminListOrders, AdminOrder } from "@/lib/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import BillingDetailsModal from "../BillingDetailsModal";
 
 export default function AdminOrdini() {
   const [q, setQ] = useState("");
@@ -10,40 +11,33 @@ export default function AdminOrdini() {
   const [rows, setRows] = useState<AdminOrder[]>([]);
   const [total, setTotal] = useState(0);
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalBilling, setModalBilling] = useState<any>(null);
+
   useEffect(() => {
     (async () => {
       const r = await adminListOrders(page, q);
       setRows(r.orders);
       setTotal(r.total);
+      console.log("Ordini admin:", r.orders);
     })();
   }, [q, page]);
 
-  // Funzione per mostrare la fatturazione dettagliata
+  // Funzione per mostrare bottone "Visualizza" e aprire la modale
   function renderBilling(billing_json: any) {
     if (!billing_json) return "—";
     let billing = billing_json;
-    // Assicurati di gestire sia l'oggetto che la stringa JSON
     if (typeof billing_json === "string") {
       try { billing = JSON.parse(billing_json); } catch { return "—"; }
     }
-    // Costruisci una breve panoramica (potresti mostrare altro!)
     return (
-      <div style={{ minWidth: 200 }}>
-        <div>
-          <strong>Tipo:</strong>{" "}
-          {billing.type === "company" ? "Impresa" : "Persona fisica"}
-        </div>
-        {billing.fullName && <div><strong>Nome:</strong> {billing.fullName}</div>}
-        {billing.companyName && <div><strong>Ragione Sociale:</strong> {billing.companyName}</div>}
-        {billing.cf && <div><strong>Cod. Fiscale:</strong> {billing.cf}</div>}
-        {billing.vatNumber && <div><strong>P.IVA:</strong> {billing.vatNumber}</div>}
-        {billing.address && <div><strong>Indirizzo:</strong> {billing.address}</div>}
-        {billing.zip && <div><strong>CAP:</strong> {billing.zip}</div>}
-        {billing.city && <div><strong>Città:</strong> {billing.city}</div>}
-        {billing.province && <div><strong>Provincia:</strong> {billing.province}</div>}
-        {billing.email && <div><strong>Email:</strong> {billing.email}</div>}
-        {billing.country && <div><strong>Paese:</strong> {billing.country}</div>}
-      </div>
+      <button
+        type="button"
+        className="underline text-primary hover:text-blue-700"
+        onClick={() => { setModalBilling(billing); setModalOpen(true); }}
+      >
+        Visualizza
+      </button>
     );
   }
 
@@ -107,6 +101,7 @@ export default function AdminOrdini() {
           </div>
         </CardContent>
       </Card>
+      <BillingDetailsModal open={modalOpen} onClose={() => setModalOpen(false)} billing={modalBilling} />
     </div>
   );
 }

@@ -16,7 +16,7 @@ const Navbar = () => {
   const isLoggedIn = status === "user" && !!user;
   const isAdmin = isLoggedIn && user?.role === "admin";
 
-  const { totalQty } = useCart();
+  const { totalQty, clear } = useCart();
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -30,6 +30,7 @@ const Navbar = () => {
 
   const doLogout = async () => {
     try { await apiLogout(); } catch {}
+    clear(); // <-- svuota carrello qui
     await refreshAuth().catch(() => {});
     navigate("/");
   };
