@@ -18,6 +18,35 @@ export default function AdminOrdini() {
     })();
   }, [q, page]);
 
+  // Funzione per mostrare la fatturazione dettagliata
+  function renderBilling(billing_json: any) {
+    if (!billing_json) return "—";
+    let billing = billing_json;
+    // Assicurati di gestire sia l'oggetto che la stringa JSON
+    if (typeof billing_json === "string") {
+      try { billing = JSON.parse(billing_json); } catch { return "—"; }
+    }
+    // Costruisci una breve panoramica (potresti mostrare altro!)
+    return (
+      <div style={{ minWidth: 200 }}>
+        <div>
+          <strong>Tipo:</strong>{" "}
+          {billing.type === "company" ? "Impresa" : "Persona fisica"}
+        </div>
+        {billing.fullName && <div><strong>Nome:</strong> {billing.fullName}</div>}
+        {billing.companyName && <div><strong>Ragione Sociale:</strong> {billing.companyName}</div>}
+        {billing.cf && <div><strong>Cod. Fiscale:</strong> {billing.cf}</div>}
+        {billing.vatNumber && <div><strong>P.IVA:</strong> {billing.vatNumber}</div>}
+        {billing.address && <div><strong>Indirizzo:</strong> {billing.address}</div>}
+        {billing.zip && <div><strong>CAP:</strong> {billing.zip}</div>}
+        {billing.city && <div><strong>Città:</strong> {billing.city}</div>}
+        {billing.province && <div><strong>Provincia:</strong> {billing.province}</div>}
+        {billing.email && <div><strong>Email:</strong> {billing.email}</div>}
+        {billing.country && <div><strong>Paese:</strong> {billing.country}</div>}
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <Card>
@@ -34,12 +63,13 @@ export default function AdminOrdini() {
                   <th className="py-2 pr-2">Email</th>
                   <th className="py-2 pr-2">Importo</th>
                   <th className="py-2 pr-2">Stato</th>
-                  <th className="py-2">Data</th>
+                  <th className="py-2 pr-2">Data</th>
+                  <th className="py-2 pr-2">Fatturazione</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map(o => (
-                  <tr key={o.orderCode} className="border-b last:border-0">
+                  <tr key={o.orderCode} className="border-b last:border-0 align-top">
                     <td className="py-2 pr-2">{o.orderCode}</td>
                     <td className="py-2 pr-2">{o.guest_email ?? "—"}</td>
                     <td className="py-2 pr-2">{(o.amountCents/100).toFixed(2)} €</td>
@@ -57,11 +87,12 @@ export default function AdminOrdini() {
                         {o.status}
                       </Badge>
                     </td>
-                    <td className="py-2">{o.created_at?.replace("T", " ").slice(0, 16) ?? "—"}</td>
+                    <td className="py-2 pr-2">{o.created_at?.replace("T", " ").slice(0, 16) ?? "—"}</td>
+                    <td className="py-2 pr-2">{renderBilling(o.billing_json)}</td>
                   </tr>
                 ))}
                 {!rows.length && (
-                  <tr><td colSpan={5} className="py-6 text-center text-muted-foreground">Nessun risultato</td></tr>
+                  <tr><td colSpan={6} className="py-6 text-center text-muted-foreground">Nessun risultato</td></tr>
                 )}
               </tbody>
             </table>

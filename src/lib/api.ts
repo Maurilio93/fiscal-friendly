@@ -166,6 +166,7 @@ export const pingPayments = () =>
 
 /* ======================= ADMIN API ======================= */
 export type AdminOrder = {
+  billing_json(billing_json: any): import("react").ReactNode;
   id: string | number;
   orderCode: string;
   user_id: string | null;
