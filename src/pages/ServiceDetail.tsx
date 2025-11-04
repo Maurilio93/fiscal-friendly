@@ -169,12 +169,6 @@ export default function ServiceDetailPage() {
       <Card>
         <CardContent className="py-6">
           <div className="flex flex-col md:flex-row gap-3">
-            <a href="/contatti#form">
-              <Button className="bg-primary text-primary-foreground">
-                <ClipboardList className="mr-2 h-5 w-5" />
-                Compila il form
-              </Button>
-            </a>
             <a href={TEL_LINK}>
               <Button className="bg-[#FF6B6B]">
                 <Phone className="mr-2 h-5 w-5" />
