@@ -145,7 +145,7 @@ export const getOverview = (q: string = "") =>
 export function createOrder(payload: {
   customer?: { email?: string; fullName?: string };
   items: VivaOrderItem[];
-  billing: BillingPayload;
+  billing: BillingPayload;  // <-- QUI billing, non billing_json!
 }): Promise<{ paymentUrl: string; orderCode: string | number }> {
   return http("/api/payments/viva/order", {
     method: "POST",
@@ -157,7 +157,7 @@ export function createOrder(payload: {
 export const createVivaOrder = (payload: {
   customer: { email: string; fullName: string };
   items: VivaOrderItem[];
-  billing?: BillingPayload;
+  billing?: BillingPayload; // <-- QUI billing, non billing_json!
 }) => createOrder({ ...payload, billing: payload.billing as BillingPayload });
 
 // Diagnostica

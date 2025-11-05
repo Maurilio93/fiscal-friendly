@@ -4,17 +4,18 @@ import { createVivaOrder, VivaOrderItem, centsToEUR } from "@/lib/api";
 import { useAuth } from "@/auth/AuthContext";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import BillingModal, { BillingPayload } from "@/components/BillingModal";
 
 type LocalCartItem = {
   id: string;
   qty: number;
   title?: string;
   unitPriceCents?: number;
-  price?: number; // fallback (euro) -> trasformato in cents
+  price?: number;
 };
 
 export default function CartPage() {
-  const { items, setQty, remove, clear, totalClientCents, /* NEW: */ /* toVivaItems, */ rememberOrder } = useCart();
+  const { items, setQty, remove, clear, totalClientCents, rememberOrder } = useCart();
   const cartItems = items as LocalCartItem[];
 
   const { user } = useAuth();
@@ -22,6 +23,9 @@ export default function CartPage() {
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+
+  // Modale dati fatturazione
+  const [billingModalOpen, setBillingModalOpen] = useState(false);
 
   // Prefill da utente loggato
   useEffect(() => {
@@ -31,7 +35,23 @@ export default function CartPage() {
     }
   }, [user]);
 
-  const payNow = async () => {
+  const handlePayClick = () => {
+    setErr(null);
+    if (!cartItems.length) {
+      setErr("Carrello vuoto");
+      return;
+    }
+    setBillingModalOpen(true);
+  };
+
+  // Su conferma modale dati fatturazione
+  const handleBillingSubmit = async (billingData: BillingPayload) => {
+    setBillingModalOpen(false);
+    await payNow(billingData);
+  };
+
+  // Chiamata a backend per checkout
+  const payNow = async (billingData: BillingPayload) => {
     setErr(null);
 
     if (!cartItems.length) {
@@ -42,8 +62,11 @@ export default function CartPage() {
       setErr("Inserisci nome e email");
       return;
     }
+    if (!billingData) {
+      setErr("Completa tutti i dati di fatturazione");
+      return;
+    }
 
-    // Prepara payload conforme all'API (manteniamo il tuo fallback price->cents)
     const vivaItems: VivaOrderItem[] = cartItems.map((it) => ({
       id: it.id,
       qty: it.qty,
@@ -59,16 +82,14 @@ export default function CartPage() {
       const { paymentUrl, orderCode } = await createVivaOrder({
         customer: { email: email.trim(), fullName: fullName.trim() },
         items: vivaItems,
+        billing: billingData, 
       });
 
       if (!paymentUrl || !orderCode) {
         throw new Error("Risposta ordine non valida");
       }
 
-      // 🔹 salva orderCode + snapshot carrello (NUOVO)
       rememberOrder(String(orderCode));
-
-      // Redirect a VivaWallet
       window.location.href = paymentUrl;
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
@@ -181,7 +202,7 @@ export default function CartPage() {
               </Button>
               <Button
                 className="bg-[#FF6B6B] hover:opacity-90"
-                onClick={payNow}
+                onClick={handlePayClick}
                 disabled={loading || !cartItems.length}
               >
                 {loading ? "Reindirizzamento..." : "Paga ora"}
@@ -195,6 +216,15 @@ export default function CartPage() {
           </p>
         </>
       )}
+
+      {/* Modale dati fatturazione */}
+      <BillingModal
+        open={billingModalOpen}
+        onClose={() => setBillingModalOpen(false)}
+        onSubmit={handleBillingSubmit}
+        defaultEmail={email}
+        defaultName={fullName}
+      />
     </div>
   );
 }
