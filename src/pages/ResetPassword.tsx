@@ -30,7 +30,8 @@ export default function ResetPassword() {
     try {
       await resetPassword(token, pwd);
       setDone(true);
-      setTimeout(() => navigate("/login", { replace: true }), 1200);
+      // Allunga il tempo e mostra messaggio+link!
+      setTimeout(() => navigate("/login", { replace: true }), 3000);
     } catch (e: any) {
       setErr(e?.message || "Impossibile reimpostare la password.");
     } finally {
@@ -47,7 +48,12 @@ export default function ResetPassword() {
         </CardHeader>
         <CardContent>
           {done ? (
-            <p className="text-sm text-green-600 text-center">Password aggiornata! Reindirizzamento…</p>
+            <div className="text-center space-y-3">
+              <p className="text-sm text-green-600">Password aggiornata con successo!</p>
+              <p className="text-sm">
+                Verrai reindirizzato tra pochi secondi, oppure <Link to="/login" className="underline text-blue-700 font-medium">clicca qui per accedere</Link>.
+              </p>
+            </div>
           ) : (
             <form className="space-y-4" onSubmit={onSubmit}>
               <div className="space-y-2">
