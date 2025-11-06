@@ -123,11 +123,15 @@ export const requestPasswordReset = (email: string) =>
     body: JSON.stringify({ email }),
   });
 
-export const resetPassword = (token: string, newPassword: string) =>
-  http<{ ok: boolean }>("/api/auth/reset", {
+export async function resetPassword(token, newPassword) {
+  const res = await fetch("/api/auth/reset", {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ token, newPassword }),
   });
+  if (!res.ok) throw new Error((await res.json()).error || "Errore");
+  return await res.json();
+}
 
 /* ----------------------------- USER ----------------------------- */
 export type Overview = {
