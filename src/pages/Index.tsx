@@ -26,6 +26,109 @@ import SignupForm from "@/components/SignupForm";
 import { useEffect, useState } from "react";
 import BillingModal, { BillingPayload } from "@/components/BillingModal";
 import { startCheckout } from "@/lib/checkout";
+import { useAuth } from "@/auth/AuthContext";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+// Componente per il pulsante pagamento spese (solo utenti loggati)
+function PaymentButton({ onOpenBilling }: { onOpenBilling: (item: { id: string; title: string; unitPriceCents: number }) => void }) {
+  const { user } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [error, setError] = useState("");
+
+  if (!user) return null; // nascosto se non loggato
+
+  const handleSubmit = () => {
+    setError("");
+    const num = parseFloat(amount.replace(",", "."));
+    
+    if (!num || isNaN(num) || num < 1 || num > 10000) {
+      setError("Inserisci un importo valido tra € 1,00 e € 10.000,00");
+      return;
+    }
+
+    // Converti in centesimi (IVA esclusa, sarà aggiunta dal sistema al checkout)
+    const cents = Math.round(num * 100);
+    
+    // Chiama la funzione del componente padre per aprire il modal fatturazione
+    onOpenBilling({
+      id: "spese-agenzia-cciaa",
+      title: "PAGAMENTO SPESE AGENZIA ENTRATE / CCIAA",
+      unitPriceCents: cents,
+    });
+
+    setOpen(false);
+    setAmount("");
+  };
+
+  return (
+    <>
+      <section className="py-12 px-4 bg-muted/30">
+        <div className="max-w-2xl mx-auto text-center">
+          <Button
+            size="lg"
+            variant="outline"
+            className="text-lg px-8 py-4 border-2 border-primary hover:bg-primary hover:text-primary-foreground"
+            onClick={() => setOpen(true)}
+          >
+            <Euro className="mr-2 h-5 w-5" />
+            PAGAMENTO SPESE AGENZIA ENTRATE / CCIAA
+          </Button>
+          <p className="text-sm text-muted-foreground mt-3">
+            Inserisci l'importo comunicato per le spese di registrazione/deposito
+          </p>
+        </div>
+      </section>
+
+      {/* Dialog per inserimento importo */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pagamento Spese Agenzia Entrate / CCIAA</DialogTitle>
+            <DialogDescription>
+              Inserisci l'importo (IVA esclusa) che ti è stato comunicato per le spese di registrazione, diritti, bolli, ecc.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="amount">Importo in Euro (IVA esclusa 22%)</Label>
+              <div className="relative">
+                <Euro className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="amount"
+                  type="number"
+                  step="0.01"
+                  min="1"
+                  max="10000"
+                  placeholder="Es: 150.50"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              {error && <p className="text-sm text-destructive">{error}</p>}
+              <p className="text-xs text-muted-foreground">
+                Importo minimo: € 1,00 — Importo massimo: € 10.000,00
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Annulla
+            </Button>
+            <Button onClick={handleSubmit}>
+              Procedi al pagamento
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
 
 const Index = () => {
   const location = useLocation();
@@ -182,7 +285,7 @@ const Index = () => {
                   € 100 <span className="text-lg text-muted-foreground">+ IVA</span>
                 </div>
                 <CardDescription className="text-lg">
-                  Servizi inclusi nell’abbonamento
+                  Servizi inclusi nell'abbonamento
                 </CardDescription>
               </CardHeader>
 
@@ -299,7 +402,7 @@ const Index = () => {
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-2 text-center">
                 <p>• Apertura/chiusura P.IVA</p>
-                <p>• Iscrizione CCIAA</p>
+                <p>• Iscrizioni, variazioni e cancellazioni CCIAA</p>
                 <p>• Deposito bilanci</p>
                 <p>• Adempimenti societari</p>
                 <p>• Visure e certificati</p>
@@ -316,9 +419,9 @@ const Index = () => {
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-2 text-center">
                 <p>• Registrazione contratto di locazione</p>
-                <p>• Registrazione comodati d’uso gratuiti</p>
+                <p>• Registrazione comodati d'uso gratuiti</p>
                 <p>• Registrazioni scritture private</p>
-                <p>• Stipula e registrazione cessione quote SRL</p>
+                <p>• Consulenza per la stipula di atti tra privati</p>
               </CardContent>
             </Card>
 
@@ -342,13 +445,51 @@ const Index = () => {
           <div className="text-center mt-12">
             <Link to="/servizi" aria-label="Vai alla pagina Servizi">
               <Button size="lg" className="bg-gradient-hero hover:opacity-90">
-                Vedi tutti i servizi
+                I nostri servizi extra
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
           </div>
         </div>
       </section>
+
+      {/* ========== SEZIONE FAQ ========== */}
+      <section className="py-20 px-4 bg-background" aria-label="Domande frequenti">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Risposte a domande frequenti e chiarimenti prima dell'acquisto
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            <Card className="shadow-elegant">
+              <CardHeader>
+                <CardTitle className="text-lg">IVA compresa o esclusa?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Tutti i prezzi si intendono IVA esclusa 22% che viene automaticamente calcolata dal sistema all'atto del pagamento.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-elegant">
+              <CardHeader>
+                <CardTitle className="text-lg">Spese Agenzia entrate e CCIAA</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Diverse pratiche da inoltrare all'agenzia delle entrate e alla CCIAA sono soggette al pagamento di imposte di registro, diritti e bolli che variano a secondo la pratica da trasmettere e che vi saranno comunicate all'atto della richiesta del servizio.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* ========== PULSANTE PAGAMENTO SPESE ========== */}
+      <PaymentButton onOpenBilling={openBillingFor} />
 
       {/* Pacchetto Commercialisti */}
       <section className="py-10 px-4" aria-label="Pacchetto Commercialisti">
