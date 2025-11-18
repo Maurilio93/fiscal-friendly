@@ -70,13 +70,15 @@ function PaymentButton({ onOpenBilling }: { onOpenBilling: (item: { id: string; 
           <Button
             size="lg"
             variant="outline"
-            className="text-lg px-8 py-4 border-2 border-primary hover:bg-primary hover:text-primary-foreground"
+            className="text-base md:text-lg px-4 md:px-8 py-3 md:py-4 border-2 border-primary hover:bg-primary hover:text-primary-foreground w-full md:w-auto"
             onClick={() => setOpen(true)}
           >
-            <Euro className="mr-2 h-5 w-5" />
-            PAGAMENTO SPESE AGENZIA ENTRATE / CCIAA
+            <Euro className="mr-2 h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />
+            <span className="text-sm md:text-base leading-tight">
+              PAGAMENTO SPESE<br className="md:hidden" /> AGENZIA ENTRATE / CCIAA
+            </span>
           </Button>
-          <p className="text-sm text-muted-foreground mt-3">
+          <p className="text-xs md:text-sm text-muted-foreground mt-3 px-2">
             Inserisci l'importo comunicato per le spese di registrazione/deposito
           </p>
         </div>
