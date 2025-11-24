@@ -29,6 +29,8 @@ import SignupForm from "./components/SignupForm";
 import NotFound from "./pages/NotFound";
 import PasswordDimenticata from "./pages/PasswordDimenticata";
 import ResetPassword from "./pages/ResetPassword";
+import Blog from "./pages/Blog";
+import BlogDetail from "./pages/BlogDetail";
 
 // AREA UTENTI
 import UserLayout from "./pages/components/UserLayout";
@@ -42,6 +44,7 @@ import AdminHome from "./pages/Admin/index";
 import AdminOrdini from "./pages/Admin/Ordini";
 import AdminUtenti from "./pages/Admin/Utenti";
 import AdminDocumenti from "./pages/Admin/Documenti";
+import AdminBlog from "./pages/Admin/Blog";
 
 import { CartProvider } from "./cart/CartContext";
 
@@ -67,6 +70,7 @@ const App = () => (
                   <Route path="/servizi/:id" element={<ServiceDetail />} />
                   <Route path="/come-funziona" element={<ComeFunziona />} />
                   <Route path="/commercialisti" element={<CommercialistiPage />} />
+                  <Route path="/blog" element={<Blog />} />
                   <Route path="/lavora-con-noi" element={<LavoraConNoi />} />
                   <Route path="/contatti" element={<Contatti />} />
                   <Route path="/cart" element={<CartPage />} />
@@ -104,6 +108,7 @@ const App = () => (
                     <Route path="ordini" element={<AdminOrdini />} />
                     <Route path="utenti" element={<AdminUtenti />} />
                     <Route path="documenti" element={<AdminDocumenti />} />
+                    <Route path="blog" element={<AdminBlog />} />
                   </Route>
 
                   {/* 404 */}
