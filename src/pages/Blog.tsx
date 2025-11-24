@@ -4,7 +4,8 @@ import axios from "axios";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Eye } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+// ✅ CAMBIA QUESTO: usa solo /api
+const API_URL = "/api";
 
 interface Article {
   id: number;
