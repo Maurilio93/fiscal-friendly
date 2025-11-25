@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Eye } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Upload, X, Image as ImageIcon } from "lucide-react";
 
 const API_URL = "/api";
 
@@ -36,6 +36,7 @@ export default function AdminBlog() {
   const [coverImage, setCoverImage] = useState("");
   const [published, setPublished] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     loadArticles();
@@ -81,6 +82,42 @@ export default function AdminBlog() {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Controlla dimensione (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("L'immagine è troppo grande (max 5MB)");
+      return;
+    }
+
+    // Controlla tipo
+    if (!file.type.startsWith("image/")) {
+      toast.error("Carica solo immagini");
+      return;
+    }
+
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const { data } = await axios.post(`${API_URL}/admin/blog/upload-image`, formData, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+
+      setCoverImage(data.fullUrl);
+      toast.success("Immagine caricata!");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response?.data?.detail || "Errore nel caricamento");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSave = async () => {
     if (!title.trim() || !content.trim()) {
       toast.error("Titolo e contenuto sono obbligatori");
@@ -91,7 +128,6 @@ export default function AdminBlog() {
       setSaving(true);
       
       if (editingId) {
-        // Modifica
         await axios.put(
           `${API_URL}/admin/blog/articles/${editingId}`,
           { title, content, coverImage, published },
@@ -99,7 +135,6 @@ export default function AdminBlog() {
         );
         toast.success("Articolo aggiornato!");
       } else {
-        // Nuovo
         await axios.post(
           `${API_URL}/admin/blog/articles`,
           { title, content, coverImage, published },
@@ -174,21 +209,77 @@ export default function AdminBlog() {
                 />
               </div>
               
+              {/* NUOVO BOX UPLOAD IMMAGINE */}
               <div>
-                <Label htmlFor="coverImage">Immagine di copertina (URL)</Label>
-                <Input
-                  id="coverImage"
-                  value={coverImage}
-                  onChange={(e) => setCoverImage(e.target.value)}
-                  placeholder="https://esempio.com/immagine.jpg"
-                />
-                {coverImage && (
-                  <img 
-                    src={coverImage} 
-                    alt="Preview" 
-                    className="mt-2 w-full max-h-48 object-cover rounded-lg"
-                  />
-                )}
+                <Label>Immagine di copertina</Label>
+                
+                <div className="space-y-3 mt-2">
+                  {!coverImage ? (
+                    // Box con + per caricare
+                    <div
+                      onClick={() => document.getElementById("imageFile")?.click()}
+                      className="relative border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 hover:border-primary/50 hover:bg-muted/50 transition-all cursor-pointer group"
+                    >
+                      <input
+                        id="imageFile"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
+                        className="hidden"
+                      />
+                      
+                      <div className="flex flex-col items-center justify-center text-center space-y-3">
+                        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                          {uploading ? (
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                          ) : (
+                            <Plus className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
+                          )}
+                        </div>
+                        
+                        <div>
+                          <p className="font-medium text-sm">
+                            {uploading ? "Caricamento..." : "Carica immagine di copertina"}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            JPG, PNG, WEBP o GIF (max 5MB)
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    // Preview con immagine
+                    <div className="relative group">
+                      <img 
+                        src={coverImage} 
+                        alt="Preview" 
+                        className="w-full h-64 object-cover rounded-lg border-2"
+                        onError={() => toast.error("Immagine non valida")}
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => setCoverImage("")}
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        Rimuovi
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {/* Input URL opzionale */}
+                  <div className="flex gap-2 items-center">
+                    <Input
+                      value={coverImage}
+                      onChange={(e) => setCoverImage(e.target.value)}
+                      placeholder="oppure incolla un URL immagine"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
               </div>
               
               <div>
@@ -223,7 +314,7 @@ export default function AdminBlog() {
               <div className="flex gap-2 pt-4">
                 <Button 
                   onClick={handleSave} 
-                  disabled={saving}
+                  disabled={saving || uploading}
                   className="flex-1"
                 >
                   {saving ? "Salvataggio..." : "Salva Articolo"}
@@ -231,7 +322,7 @@ export default function AdminBlog() {
                 <Button 
                   variant="outline" 
                   onClick={() => setDialogOpen(false)}
-                  disabled={saving}
+                  disabled={saving || uploading}
                 >
                   Annulla
                 </Button>
@@ -256,30 +347,39 @@ export default function AdminBlog() {
             <Card key={article.id}>
               <CardHeader>
                 <div className="flex justify-between items-start gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CardTitle className="text-xl">{article.title}</CardTitle>
-                      {article.published ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
-                          <Eye className="h-3 w-3" />
-                          Pubblicato
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-medium">
-                          Bozza
-                        </span>
-                      )}
-                    </div>
-                    
-                    <CardDescription>
-                      <div className="flex gap-4 text-sm">
-                        <span>Slug: {article.slug}</span>
-                        <span>👁 {article.views} visualizzazioni</span>
-                        <span>
-                          {new Date(article.published_at || article.created_at).toLocaleDateString("it-IT")}
-                        </span>
+                  <div className="flex gap-4 flex-1">
+                    {article.cover_image && (
+                      <img 
+                        src={article.cover_image} 
+                        alt={article.title}
+                        className="w-24 h-24 object-cover rounded"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <CardTitle className="text-xl">{article.title}</CardTitle>
+                        {article.published ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+                            <Eye className="h-3 w-3" />
+                            Pubblicato
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-medium">
+                            Bozza
+                          </span>
+                        )}
                       </div>
-                    </CardDescription>
+                      
+                      <CardDescription>
+                        <div className="flex gap-4 text-sm">
+                          <span>Slug: {article.slug}</span>
+                          <span>👁 {article.views} visualizzazioni</span>
+                          <span>
+                            {new Date(article.published_at || article.created_at).toLocaleDateString("it-IT")}
+                          </span>
+                        </div>
+                      </CardDescription>
+                    </div>
                   </div>
                   
                   <div className="flex gap-2">
