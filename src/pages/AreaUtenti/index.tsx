@@ -14,7 +14,7 @@ export default function AreaUtentiHome() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await getOverview(); // argomento opzionale
+        const res = await getOverview();
         setData(res);
       } finally {
         setLoading(false);
@@ -44,7 +44,7 @@ export default function AreaUtentiHome() {
             <StatCard
               icon={<CreditCard className="h-5 w-5" />}
               label="Ordini"
-              value={loading ? "…" : String(data?.orders?.length ?? 0)}
+              value={loading ? "…" : String(data?.orders?.filter((o: any) => o.status === 'paid').length ?? 0)}
             />
             <StatCard
               icon={<Phone className="h-5 w-5" />}

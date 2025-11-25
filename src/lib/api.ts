@@ -219,3 +219,15 @@ export const adminUserDocuments = (userId: string) =>
   http<{ documents: Array<{ id: string; label: string; url: string; created_at?: string }> }>(
     `/api/admin/users/${encodeURIComponent(userId)}/documents`
   );
+
+  /* ----------------------------- USER ORDERS ----------------------------- */
+export type UserOrder = {
+  orderCode: string;
+  status: string;
+  amountCents: number;
+  paidAt?: string;
+  created_at?: string;
+};
+
+export const getMyOrders = () =>
+  http<{ orders: UserOrder[] }>("/api/me/orders");
