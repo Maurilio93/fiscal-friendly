@@ -800,6 +800,68 @@ const Index = () => {
         </div>
       )}
 
+
+            {/* Contatore Statistiche */}
+      <section className="py-16 px-4 bg-background" aria-label="Statistiche">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold mb-2">
+              I nostri numeri
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              La fiducia dei nostri clienti è il nostro successo
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Clienti Attivi */}
+            <Card className="shadow-elegant hover:shadow-glow transition-smooth text-center">
+              <CardContent className="pt-8 pb-6">
+                <div className="bg-primary/10 p-4 rounded-full w-fit mx-auto mb-4">
+                  <Shield className="h-8 w-8 text-primary" />
+                </div>
+                <div className="text-5xl md:text-6xl font-bold text-primary mb-2">
+                  380+
+                </div>
+                <p className="text-lg text-muted-foreground font-medium">
+                  Clienti Attivi
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Pratiche Completate */}
+            <Card className="shadow-elegant hover:shadow-glow transition-smooth text-center">
+              <CardContent className="pt-8 pb-6">
+                <div className="bg-secondary/10 p-4 rounded-full w-fit mx-auto mb-4">
+                  <CheckCircle className="h-8 w-8 text-secondary" />
+                </div>
+                <div className="text-5xl md:text-6xl font-bold text-primary mb-2">
+                  1.250+
+                </div>
+                <p className="text-lg text-muted-foreground font-medium">
+                  Pratiche Completate
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Soddisfazione */}
+            <Card className="shadow-elegant hover:shadow-glow transition-smooth text-center">
+              <CardContent className="pt-8 pb-6">
+                <div className="bg-accent/10 p-4 rounded-full w-fit mx-auto mb-4">
+                  <MessageCircle className="h-8 w-8 text-accent-foreground" />
+                </div>
+                <div className="text-5xl md:text-6xl font-bold text-primary mb-2">
+                  98%
+                </div>
+                <p className="text-lg text-muted-foreground font-medium">
+                  Soddisfazione Clienti
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Contatti */}
       <section
         id="contatti"
@@ -971,67 +1033,6 @@ const Index = () => {
           {/* form iscrizione */}
           <div className="max-w-4xl mx-auto text-center mt-12" id="registrati">
             <SignupForm />
-          </div>
-        </div>
-      </section>
-
-      {/* Contatore Statistiche */}
-      <section className="py-16 px-4 bg-background" aria-label="Statistiche">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold mb-2">
-              I nostri numeri
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              La fiducia dei nostri clienti è il nostro successo
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Clienti Attivi */}
-            <Card className="shadow-elegant hover:shadow-glow transition-smooth text-center">
-              <CardContent className="pt-8 pb-6">
-                <div className="bg-primary/10 p-4 rounded-full w-fit mx-auto mb-4">
-                  <Shield className="h-8 w-8 text-primary" />
-                </div>
-                <div className="text-5xl md:text-6xl font-bold text-primary mb-2">
-                  4.200+
-                </div>
-                <p className="text-lg text-muted-foreground font-medium">
-                  Clienti Attivi
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Pratiche Completate */}
-            <Card className="shadow-elegant hover:shadow-glow transition-smooth text-center">
-              <CardContent className="pt-8 pb-6">
-                <div className="bg-secondary/10 p-4 rounded-full w-fit mx-auto mb-4">
-                  <CheckCircle className="h-8 w-8 text-secondary" />
-                </div>
-                <div className="text-5xl md:text-6xl font-bold text-primary mb-2">
-                  2.850+
-                </div>
-                <p className="text-lg text-muted-foreground font-medium">
-                  Pratiche Completate
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Soddisfazione */}
-            <Card className="shadow-elegant hover:shadow-glow transition-smooth text-center">
-              <CardContent className="pt-8 pb-6">
-                <div className="bg-accent/10 p-4 rounded-full w-fit mx-auto mb-4">
-                  <MessageCircle className="h-8 w-8 text-accent-foreground" />
-                </div>
-                <div className="text-5xl md:text-6xl font-bold text-primary mb-2">
-                  98%
-                </div>
-                <p className="text-lg text-muted-foreground font-medium">
-                  Soddisfazione Clienti
-                </p>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </section>
