@@ -785,13 +785,14 @@ const Index = () => {
 
               <div className="mt-8 rounded-lg bg-blue-50 p-6 text-center border border-blue-200">
                 <p className="text-lg font-bold text-blue-900 uppercase mb-2">
-                  Invia una email per info e costi sulla realizzazione di un
-                  business plan
+                  Contattaci per info e costi sulla realizzazione di un business
+                  plan
                 </p>
                 <a
-                  href="mailto:info@miniconsulenze.it"
+                  href="tel:+393318341262"
                   className="inline-block mt-3 rounded-full bg-blue-700 px-6 py-3 text-white font-semibold hover:bg-blue-800 transition-colors"
                 >
+                  <Phone className="inline-block h-5 w-5 mr-2 -mt-1" />
                   Contattaci
                 </a>
               </div>
@@ -800,8 +801,7 @@ const Index = () => {
         </div>
       )}
 
-
-            {/* Contatore Statistiche */}
+      {/* Contatore Statistiche */}
       <section className="py-16 px-4 bg-background" aria-label="Statistiche">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
@@ -821,10 +821,10 @@ const Index = () => {
                   <Shield className="h-8 w-8 text-primary" />
                 </div>
                 <div className="text-5xl md:text-6xl font-bold text-primary mb-2">
-                  380+
+                  4.000+
                 </div>
                 <p className="text-lg text-muted-foreground font-medium">
-                  Clienti Attivi
+                  Utenti Raggiunti
                 </p>
               </CardContent>
             </Card>
